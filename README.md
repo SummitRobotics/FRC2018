@@ -1,4 +1,4 @@
-This is the documentation regarding the present cycle of code. I realize that the current setup of the github documentation is inconvenient, but I would recommend forking this branch, and opening a repository with the aforementioned fork. Sorry.
+This is the <font color="red">documentation</font> regarding the present cycle of code. I realize that the current setup of the github documentation is inconvenient, but I would recommend forking this branch, and opening a repository with the aforementioned fork. Sorry.
 
 This code is volatile, like my threads. It changes all time, because I have a habit of changing my mind. If you have suggestions, feel free to throw an issue on this branch, and I'll see it promptly. The code is not well commented, apart from hardware and teleop. This will be addressed when build season ends, but, given that I'm the only programmer, it's not a priority. 
 
