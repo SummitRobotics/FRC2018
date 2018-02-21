@@ -18,7 +18,7 @@ public class MastD extends Action {
 	//travel distance - beta
 	public void run() {
 		started = true;
-		setMast(target);
+		//setMast(target);
 		update();
 	}
 	

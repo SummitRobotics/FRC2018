@@ -2,12 +2,14 @@ package templates;
 
 public class Driver {
 	private String name;
-	protected double driveExponent;
-	protected double maxPower;
-	protected double threshold;
-	protected double steeringCoef;
+	protected double lateralExponent;
+	protected double rotateSensitivity;
 	
-
+	protected double maxPower;
+	
+	protected double threshold;
+	protected double joystickError;
+	
 	public Driver(String n) {
 		name = n;
 	}
@@ -16,8 +18,11 @@ public class Driver {
 		return name;
 	}
 	
-	public double getDriveExponent() {
-		return driveExponent;
+	public double getLateralExponent() {
+		return lateralExponent;
+	}
+	public double getRotationSensitivity() {
+		return rotateSensitivity;
 	}
 	public double getMaxPower() {
 		return maxPower;
@@ -25,8 +30,8 @@ public class Driver {
 	public double getThreshold() {
 		return threshold;
 	}
-	public double getSteeringCoef() {
-		return steeringCoef;
+	public double getJoystickError() {
+		return joystickError;
 	}
 
 }

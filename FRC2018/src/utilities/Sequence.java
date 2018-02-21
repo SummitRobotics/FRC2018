@@ -43,9 +43,9 @@ public class Sequence {
 	}
 	
 	//rotate by x degrees with gyro with custom power
-		public void addRotationGyroCustomPower(double theta, double power) {
-			actions.add(new RotateGyro(robot, theta, power));
-		}
+	public void addRotationGyroCustomPower(double theta, double power) {
+		actions.add(new RotateGyro(robot, theta, power));
+	}
 	
 	//controlling pistons
 	public void addPiston(DoubleSolenoid x) {
@@ -84,17 +84,11 @@ public class Sequence {
 			//find if previous action has been called
 			if(!actions.get(index).finished()) {
 				actions.get(index).run();
-				SmartDashboard.putString("Action Running: ", actions.get(index).getName() + ", " + index);
+				SmartDashboard.putString("Action Running: ", actions.get(index).getAction() + ", " + index);
 			}
 			else {
 				index++;
 			}
-		}
-	}
-	
-	public void interuptActions() {
-		for(int a = 0; a < actions.size(); ++a) {
-			actions.get(a).interrupt();
 		}
 	}
 	

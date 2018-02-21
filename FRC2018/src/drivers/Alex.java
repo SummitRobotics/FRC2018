@@ -5,9 +5,10 @@ import templates.Driver;
 public class Alex extends Driver{
 	public Alex() {
 		super("Alex");
-		driveExponent = .7;
+		lateralExponent = .7;
+		rotateSensitivity = 2;
 		maxPower = 1;
 		threshold = .2;
-		steeringCoef = 2;
+		joystickError = .3;
 	}
 }

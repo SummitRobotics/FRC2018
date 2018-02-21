@@ -18,13 +18,11 @@ public class Delay extends Action{
 	@Override
 	public void run() {
 		started = true;
-		if(!this.isInterrupted()) {
-			try {
-				Thread.sleep(time);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		finished = true;
 	}

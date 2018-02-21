@@ -5,9 +5,10 @@ import templates.Driver;
 public class Programming extends Driver{
 	public Programming() {
 		super("Development");
-		driveExponent = 1;
-		maxPower = 1;
+		lateralExponent = 3;
+		rotateSensitivity = 1;
+		maxPower = .5;
 		threshold = .3;
-		steeringCoef = 1;
+		joystickError = .3;
 	}
 }

@@ -1,3 +1,4 @@
+
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
@@ -15,7 +16,7 @@ public class Piston extends Action{
 	@Override
 	public void run() {
 		started = true;
-		if(!this.isInterrupted() && robot.pneumaticsEnabled) {
+		if(robot.pneumaticsEnabled) {
 			if(piston.get() == DoubleSolenoid.Value.kReverse) {
 				piston.set(DoubleSolenoid.Value.kForward);
 			}

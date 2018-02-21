@@ -2,14 +2,13 @@ package templates;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 
-public abstract class Action extends Thread{
+public abstract class Action{
 	protected Hardware robot;
 	protected boolean finished = false;
-	protected boolean started = true;
+	protected boolean started = false;
 	
 	public Action(Hardware r) {
 		robot = r;
-		this.setDaemon(false);
 	}
 	
 	public abstract void run();
@@ -23,4 +22,9 @@ public abstract class Action extends Thread{
 	public boolean started() {
 		return started;
 	}
+	
+	public void restart() {
+		started = false;
+	}
+
 }

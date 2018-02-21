@@ -80,6 +80,7 @@ public class Variables {
 			rightReversed = false;
 			leftSensorPhase = false;
 			rightSensorPhase = false;
+			rightReversedI = true;
 			leftIntakeId = 37;
 			rightIntakeId = 34;
 			leftFollowerId = 32;

@@ -29,6 +29,7 @@ public class Input {
 	private UserInterface teleopChoice;
 	private UserInterface autoChoice;
 	private UserInterface driveChoice;
+	private UserInterface encoderAuto;
 	
 	//required autonomous information
 	private UserInterface position;
@@ -41,13 +42,38 @@ public class Input {
 		displayAutoPrereq();
 		displayTeleopInformation();
 		displayDrivers();
+		displayEncoderAuto();
 	}
 	
 	private void addExistingClasses() {
+		//glorious encoder based auto movement
 		auto.add(new Test(robot));
+		auto.add(new RightRightSwitch(robot));
+		auto.add(new RightRightScale(robot));
+		auto.add(new RightLeftSwitch(robot));
+		auto.add(new RightLeftScale(robot));
+		auto.add(new LeftRightSwitch(robot));
+		auto.add(new LeftRightScale(robot));
+		auto.add(new LeftLeftSwitch(robot));
+		auto.add(new LeftLeftScale(robot));
+		auto.add(new CenterLeftSwitch(robot));
+		auto.add(new CenterRightSwitch(robot));
+		//filthy power based auto methods
+		auto.add(new RightRightSwitchPower(robot));
+		auto.add(new RightRightScalePower(robot));
+		auto.add(new RightLeftSwitchPower(robot));
+		auto.add(new RightLeftScalePower(robot));
+		auto.add(new LeftRightSwitchPower(robot));
+		auto.add(new LeftRightScalePower(robot));
+		auto.add(new LeftLeftSwitchPower(robot));
+		auto.add(new LeftLeftScalePower(robot));
+		auto.add(new CenterLeftSwitchPower(robot));
+		auto.add(new CenterRightSwitchPower(robot));
 		
+		//teleop methods
 		teleop.add(new Standard(robot));
 		
+		//different drivers
 		driver.add(new Programming());
 		driver.add(new Alex());
 	}
@@ -65,16 +91,23 @@ public class Input {
 	
 	private void displayAutoPrereq() {
 		ArrayList<String> pos = new ArrayList<String>();
-		pos.add("L");
-		pos.add("R");
-		pos.add("C");
+		pos.add("LEFT");
+		pos.add("RIGHT");
+		pos.add("CENTER");
 		
 		ArrayList<String> tar = new ArrayList<String>();
-		tar.add("Scale");
-		tar.add("Switch");
+		tar.add("SCALE");
+		tar.add("SWITCH");
 		
 		position = new UserInterface(pos, "Position");
 		target = new UserInterface(tar, "Target");
+	}
+	
+	private void displayEncoderAuto() {
+		ArrayList<String> enc = new ArrayList<String>();
+		enc.add("false");
+		enc.add("true");
+		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
 	}
 	
 	public AutoProgram getAuto() {
@@ -133,6 +166,14 @@ public class Input {
 		return values;
 	}
 	
+	private ArrayList<String> convertEnc(ArrayList<String> en) {
+		ArrayList<String> values = new ArrayList<String>();
+		for(int a = 0; a < en.size(); ++a) {
+			values.add(en.get(a));
+		}
+		return values;
+	}
+	
 	private Driver getDriver(String dr) {
 		for(int a = 0; a < driver.size(); ++a) {
 			if(driver.get(a).getName() == dr) {
@@ -152,12 +193,29 @@ public class Input {
 	}
 	
 	private AutoProgram getAuto(String au) {
-		for(int a = 0; a < driver.size(); ++a) {
+		for(int a = 0; a < auto.size(); ++a) {
 			if(auto.get(a).getName() == au) {
 				return auto.get(a);
 			}
 		}
 		return null;
+	}
+	
+	private boolean getEncoder() {
+		if(encoderAuto.getInput() == "true") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private char getPosition() {
+		return position.getInput().charAt(0);
+	}
+	
+	private char getTarget() {
+		return target.getInput().charAt(1);
 	}
 }
 

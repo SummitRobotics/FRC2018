@@ -29,7 +29,7 @@ public class ForwardT extends Action{
 			clock.start();
 		}
 		started = true;
-		if(!this.isInterrupted() && robot.driveEnabled) {
+		if(robot.driveEnabled) {
 			robot.leftDrive.set(ControlMode.PercentOutput, power);
 			robot.rightDrive.set(ControlMode.PercentOutput, power);
 		}
@@ -38,7 +38,7 @@ public class ForwardT extends Action{
 
 	@Override
 	public void update() {
-		if(clock.get() > time || this.isInterrupted() || !robot.driveEnabled) {
+		if(clock.get() > time || !robot.driveEnabled) {
 			finished = true;
 			clock.stop();
 			disablePower();

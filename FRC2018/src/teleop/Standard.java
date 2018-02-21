@@ -6,9 +6,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import actions.Piston;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import templates.Driver;
 import templates.TeleopProgram;
+import utilities.Variables;
 
 public class Standard extends TeleopProgram{
 	//pneumatics
@@ -18,10 +19,11 @@ public class Standard extends TeleopProgram{
 	private boolean lastExtendState = false;
 	
 	//variables
-	private double driveExponent;
-	private double maxPower;
-	private double steeringCoef;
-	private double deadzone;
+	protected double lateralExponent;
+	protected double rotateSensitivity;
+	protected double maxPower;
+	protected double threshold;
+	protected double joystickError;
 	
 	
 	public Standard(Hardware r) {
@@ -32,14 +34,17 @@ public class Standard extends TeleopProgram{
 
 	@Override
 	public void teleopInit() {
-		driveExponent = robot.variables.getDriver().getDriveExponent();
+		lateralExponent = robot.variables.getDriver().getLateralExponent();
 		maxPower = robot.variables.getDriver().getMaxPower();
-		steeringCoef = robot.variables.getDriver().getSteeringCoef();
-		deadzone = robot.variables.getDriver().getThreshold();
+		rotateSensitivity = robot.variables.getDriver().getRotationSensitivity();
+		threshold = robot.variables.getDriver().getThreshold();
+		joystickError = robot.variables.getDriver().getJoystickError();
 	}
 
 	@Override
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("l", robot.leftDrive.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("r", robot.rightDrive.getSelectedSensorPosition(0));
 		if(robot.controllerPresent) {
 			if(robot.driveEnabled) {
 				rocketDrive();
@@ -54,6 +59,10 @@ public class Standard extends TeleopProgram{
 			if(robot.mastEnabled) {
 				mast();
 			}
+		}
+		if(robot.controller.getRawButton(4)) {
+			robot.leftDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
+			robot.rightDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
 		}
 	}
 	
@@ -127,36 +136,51 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void rocketDrive() {	
-		double forward = robot.controller.getThrottle() - robot.controller.getZ();
-		double steering = robot.controller.getRawAxis(0) * steeringCoef;
-		robot.leftDrive.set(ControlMode.PercentOutput, smoothPower((forward + steering)));
-		robot.rightDrive.set(ControlMode.PercentOutput, smoothPower((forward - steering)));
+		double forwardsPower = toExponential(deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3);
+		double turningPower = toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3);;
+		
+		double leftPower = clamp(forwardsPower+turningPower, -1, 1);
+		double rightPower = -clamp(forwardsPower-turningPower, -1, 1);
+				
+		robot.leftDrive.set(ControlMode.PercentOutput, leftPower);
+		robot.rightDrive.set(ControlMode.PercentOutput, -rightPower);
 	}
 	
-	//scaling, deadzone, curve shape, etc
-	//the exponent function is applied to absolute values
-	//to avoid sub 1 exponents on negative bases
-	private double smoothPower(double x) {
-		x = capPower(x);
-		double sign = Math.signum(x);
-		x = ((Math.abs(x) - deadzone)/(1 - deadzone)) * maxPower;
-		return Math.pow(x, driveExponent)*sign;
-	}
+	public static double toExponential(double value, double exponent)
+	{
+		value = Math.pow(Math.abs(value), exponent) * Math.signum(value);
+		
+		return value;
+}
 	
-	private double capPower(double x) {
-		if(Math.abs(x) < deadzone){
-			return 0;
+	public static double deadzone(double joystickValue, double deadzone)
+	{
+		//if the joystickValue falls within the range of the deadzone...
+		if (Math.abs(joystickValue) < deadzone)
+		{
+			//Set the joystick value to 0
+			joystickValue = 0;
 		}
-		if(x < -1) {
-			return -maxPower;
+		
+		return joystickValue;
+}
+	
+	public static double clamp(double value, double min, double max)
+	{
+		//Clamp the value to not be lower than the minimum value
+		if(value < min)
+		{
+			value = min;
 		}
-		else if(x > 1) {
-			return maxPower;
+		
+		//Clamp the value to not be greater than the maximum value
+		if(value > max)
+		{
+			value = max;
 		}
-		else {
-			return x;
-		}
-	}
+		
+		return value;
+}
 	
 	//**************//
 	//
@@ -204,7 +228,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-		robot.mast.set(ControlMode.PercentOutput, capPower(robot.controller.getRawAxis(5)));
+	//	robot.mast.set(ControlMode.PercentOutput, capPower(robot.controller.getRawAxis(5), joystickError));
 	}
 
 	@Override

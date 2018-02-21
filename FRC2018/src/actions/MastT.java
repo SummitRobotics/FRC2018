@@ -28,15 +28,13 @@ public class MastT extends Action {
 			time += timer.millis();
 		}
 		started = true;
-		if(!this.isInterrupted()) {
-			setPower(power);
-		}
+		setPower(power);
 		update();
 	}
 
 	@Override
 	public void update() {
-		if(time < timer.millis() || this.isInterrupted()) {
+		if(time < timer.millis()) {
 			setPower(0);
 			finished = true;
 		}

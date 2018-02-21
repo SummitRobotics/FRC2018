@@ -12,7 +12,7 @@ public class RotateGyro extends Action{
 	//native units
 	private double error = 5;
 	//percent
-	private double maxPower = .3;
+	private double maxPower = .5;
 	
 	//constructor
 	public RotateGyro(Hardware r, double theta) {
@@ -30,10 +30,10 @@ public class RotateGyro extends Action{
 	@Override
 	public void run() {
 		if(!started) {
-			angle += robot.getAbsoluteYaw();
+			angle += robot.getRelativeYaw();
 		}
 		started = true;
-		if(!this.isInterrupted() && robot.gyroEnabled) {
+		if(robot.gyroEnabled) {
 			if(clockwise()) {
 				robot.leftDrive.set(ControlMode.PercentOutput, -maxPower);
 				robot.rightDrive.set(ControlMode.PercentOutput, maxPower);
@@ -48,7 +48,7 @@ public class RotateGyro extends Action{
 
 	
 	private boolean clockwise() {
-		double diff = angle - robot.getAbsoluteYaw();
+		double diff = angle - robot.getRelativeYaw();
 		if(diff > 0){
 			return false;
 		}
@@ -64,7 +64,7 @@ public class RotateGyro extends Action{
 	
 	@Override
 	public void update() {
-		if((Math.abs(((robot.getAbsoluteYaw()%360) - (angle%360))) < error) || this.isInterrupted() || !robot.gyroEnabled) {
+		if((Math.abs(robot.getRelativeYaw() - angle) < error) || !robot.gyroEnabled) {
 			robot.leftDrive.set(ControlMode.PercentOutput, 0);
 			robot.rightDrive.set(ControlMode.PercentOutput, 0);
 			finished = true;
