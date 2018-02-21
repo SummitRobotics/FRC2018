@@ -36,7 +36,7 @@ public class Variables {
 	private int rightFollowerId;
 	private int rightDriveId;
 	
-	//pneaumatics
+	//pneumatics
 	private int clampIdA;
 	private int clampIdB;
 	private int extenderIdA;
