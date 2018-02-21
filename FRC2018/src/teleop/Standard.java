@@ -137,7 +137,7 @@ public class Standard extends TeleopProgram{
 	//**************//
 	private void rocketDrive() {	
 		double forwardsPower = toExponential(deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3);
-		double turningPower = toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3);;
+		double turningPower = (toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3))*0.8;
 		
 		double leftPower = clamp(forwardsPower+turningPower, -1, 1);
 		double rightPower = -clamp(forwardsPower-turningPower, -1, 1);
