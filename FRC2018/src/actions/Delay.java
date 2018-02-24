@@ -1,35 +1,37 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
+import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
 public class Delay extends Action{
-	private long time = 1000;
+	private double time;
+	private Timer clock;
 	
 	public Delay(Hardware r) {
 		super(r);
 	}
 	
-	public Delay(Hardware r, double x) {
+	public Delay(Hardware r, double t) {
 		super(r);
-		time = (long) x * 1000;
+		time = t;
 	}
 
 	@Override
 	public void run() {
-		started = true;
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(!started) {
+			clock.start();
 		}
-		finished = true;
+		started = true;
+		update();
 	}
 
 	@Override
 	public void update() {
-		finished = true;
+		if(clock.get() > time) {
+			finished = true;
+			clock.stop();
+		}
 	}
 
 	@Override
