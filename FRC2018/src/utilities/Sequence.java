@@ -37,6 +37,11 @@ public class Sequence {
 		actions.add(new ForwardT(robot, time, pow));
 	}
 	
+	//go forward for time seconds custom power with gyro fixture
+	public void addForwardTGyro(double time, double pow) {
+		actions.add(new ForwardTGyro(robot, time, pow));
+	}
+	
 	//rotate by x degrees with gyro
 	public void addRotationGyro(double theta) {
 		actions.add(new RotateGyro(robot, theta));

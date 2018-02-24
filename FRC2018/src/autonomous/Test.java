@@ -13,9 +13,9 @@ public class Test extends AutoProgram{
 	@Override
 	public void autonomousInit() {
 		initCommands(1);
+		int n = 1;
 		for(int a = 0; a < 4; ++a) {
-			commands[0].addForwardT(3, .2);
-			commands[0].addRotationGyro(-90);
+			commands[0].addForwardTGyro(.3, 5);
 		}
 	}
 }

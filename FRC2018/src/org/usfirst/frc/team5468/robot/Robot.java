@@ -16,7 +16,7 @@ public class Robot extends IterativeRobot {
 	private Hardware robot;
 	private Input input;
 	private Output output;
-	private Vision lemonlight;
+	private Thread lemonlight;
 	
 	private TeleopProgram teleop;
 	private AutoProgram auto;
@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
 		robot = new Hardware();
 		input = new Input(robot);
 		output = new Output(robot);
-		lemonlight = new Vision();
+		//lemonlight = new Vision();
 	}
 
 	@Override
@@ -38,7 +38,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		lemonlight.run();
 		output.update();
 		auto.autonomousPeriodic();
 	}
@@ -53,7 +52,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		lemonlight.run();
+		//lemonlight.run();
 		output.update();
 		teleop.teleopPeriodic();
 	}
@@ -65,7 +64,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override 
 	public void disabledPeriodic() {
-		lemonlight.run();
+		//lemonlight.run();
 		robot.refreshConfig();
 		output.update();
 	}

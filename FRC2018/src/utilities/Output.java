@@ -24,5 +24,6 @@ public class Output {
 		SmartDashboard.putBoolean("Hall Effect Status", robot.hallPresent);
 		SmartDashboard.putBoolean("Controller Status", robot.controllerPresent);
 		SmartDashboard.putBoolean("Gyro Status", robot.gyroEnabled);
+		//SmartDashboard.putNumber("tv", robot.lemonlight.getOffsetDegrees());
 	}
 }

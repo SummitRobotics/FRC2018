@@ -9,10 +9,13 @@ import templates.Action;
 public class RotateGyro extends Action{
 	//degrees
 	private double angle = 0;
+	private double initialDiff = 0;
 	//native units
-	private double error = 5;
+	private double error = 1;
 	//percent
-	private double maxPower = .5;
+	private double minPower = .2;
+	private double maxPower = .6;
+	private double currentPower;
 	
 	//constructor
 	public RotateGyro(Hardware r, double theta) {
@@ -30,17 +33,18 @@ public class RotateGyro extends Action{
 	@Override
 	public void run() {
 		if(!started) {
+			initialDiff = angle;
 			angle += robot.getRelativeYaw();
 		}
 		started = true;
 		if(robot.gyroEnabled) {
 			if(clockwise()) {
-				robot.leftDrive.set(ControlMode.PercentOutput, -maxPower);
-				robot.rightDrive.set(ControlMode.PercentOutput, maxPower);
+				robot.leftDrive.set(ControlMode.PercentOutput, -currentPower);
+				robot.rightDrive.set(ControlMode.PercentOutput, currentPower);
 			}
 			else {
-				robot.leftDrive.set(ControlMode.PercentOutput, maxPower);
-				robot.rightDrive.set(ControlMode.PercentOutput, -maxPower);
+				robot.leftDrive.set(ControlMode.PercentOutput, currentPower);
+				robot.rightDrive.set(ControlMode.PercentOutput, -currentPower);
 			}
 		}
 		update();
@@ -49,6 +53,7 @@ public class RotateGyro extends Action{
 	
 	private boolean clockwise() {
 		double diff = angle - robot.getRelativeYaw();
+		currentPower = Math.max(minPower, (Math.abs(diff)/Math.abs(initialDiff))*maxPower);
 		if(diff > 0){
 			return false;
 		}

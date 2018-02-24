@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import utilities.Variables;
+import utilities.Vision;
 
 public class Hardware {
 	//drive train
@@ -44,6 +45,8 @@ public class Hardware {
 	//hall effect encoder for the mast
 	private Counter hall;
 	
+	public Vision lemonlight;
+	
 	//Enabling all code to function
 	//despite non-available components
 	public boolean driveEnabled;
@@ -53,6 +56,7 @@ public class Hardware {
 	public boolean gyroEnabled;
 	public boolean controllerPresent;
 	public boolean hallPresent;
+	public boolean lemonlightPresent;
 	
 	//**************//
 	//
@@ -60,7 +64,8 @@ public class Hardware {
 	//
 	//**************//
 	public Hardware() {
-		variables = new Variables("B");
+		//A = polybot, B = Our actual robot
+		variables = new Variables("A");
 		initGyro();
 		initCounter();
 		initGamepad();
@@ -112,6 +117,11 @@ public class Hardware {
 			initMast();
 		}else {
 			refreshMast();
+		}
+		if(!lemonlightPresent) {
+			initVision();
+		}else {
+			refreshVision();
 		}
 	}
 	
@@ -172,6 +182,24 @@ public class Hardware {
 			controllerPresent = true;
 		}catch(Exception e) {
 			controllerPresent = false;
+		}
+	}
+	
+	private void initVision() {
+		try {
+			lemonlight = new Vision();
+			lemonlightPresent = true;
+		}catch(Exception e) {
+			lemonlightPresent = false;
+		}
+	}
+	
+	private void refreshVision() {
+		try {
+			lemonlight.getArea();
+			lemonlightPresent = true;
+		}catch(Exception e) {
+			lemonlightPresent = false;
 		}
 	}
 	
