@@ -22,6 +22,6 @@ public class CenterLeftSwitch extends AutoProgram{
 		commands[0].addForwardD(88.5);
 		commands[0].addRotationGyro(-42.7);
 		commands[0].addForwardT(2, .2);
-		//commands[0].addEject(1);
+		commands[0].addEject();
 	}
 }

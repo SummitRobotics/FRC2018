@@ -18,7 +18,7 @@ public class LeftLeftSwitch extends AutoProgram{
 		commands[0].addForwardD(158);
 		commands[0].addRotationGyro(90);
 		commands[0].addForwardT(2, .2);
-		//commands[0].addEject(1);
+		commands[0].addEject();
 	}
 
 }

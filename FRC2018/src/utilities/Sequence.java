@@ -73,6 +73,14 @@ public class Sequence {
 		actions.add(new Delay(robot, time));
 	}
 	
+	public void addTempIntake() {
+		actions.add(new Compliant(robot, 2, -.8));
+	}
+	
+	public void addEject() {
+		actions.add(new Compliant(robot, 2, 1));
+	}
+	
 	//inches to encoder
 	private int ITE(double distance) {
 		return (int) Math.round(((distance) / (Math.PI*(robot.variables.getWheelDiam())) * 4096));
