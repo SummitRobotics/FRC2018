@@ -228,7 +228,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-	//	robot.mast.set(ControlMode.PercentOutput, capPower(robot.controller.getRawAxis(5), joystickError));
+		robot.mast.set(ControlMode.PercentOutput, deadzone(robot.controller.getRawAxis(5), joystickError));
 	}
 
 	@Override
