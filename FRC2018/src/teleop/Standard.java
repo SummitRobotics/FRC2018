@@ -4,10 +4,12 @@ import org.usfirst.frc.team5468.robot.Hardware;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import actions.AutoIntake;
 import actions.Piston;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import regulation.PID;
 import templates.TeleopProgram;
 import utilities.Variables;
 
@@ -17,6 +19,9 @@ public class Standard extends TeleopProgram{
 	private boolean lastClampState = false;
 	private Piston extend;
 	private boolean lastExtendState = false;
+	
+	//auto intake
+	private AutoIntake collect;
 	
 	//variables
 	protected double lateralExponent;
@@ -39,12 +44,11 @@ public class Standard extends TeleopProgram{
 		rotateSensitivity = robot.variables.getDriver().getRotationSensitivity();
 		threshold = robot.variables.getDriver().getThreshold();
 		joystickError = robot.variables.getDriver().getJoystickError();
+		collect = new AutoIntake(robot);
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		SmartDashboard.putNumber("l", robot.leftDrive.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("r", robot.rightDrive.getSelectedSensorPosition(0));
 		if(robot.controllerPresent) {
 			if(robot.driveEnabled) {
 				rocketDrive();
@@ -58,6 +62,9 @@ public class Standard extends TeleopProgram{
 			}
 			if(robot.mastEnabled) {
 				mast();
+			}
+			if(robot.lemonlightPresent) {
+				autoCollect();
 			}
 		}
 		if(robot.controller.getRawButton(4)) {
@@ -220,6 +227,12 @@ public class Standard extends TeleopProgram{
 		}
 	}
 	
+	private void autoCollect() {
+		if(robot.controller.getRawButton(2)) {
+			collect.run();
+		}
+	}
+	
 	
 	//**************//
 	//
@@ -228,7 +241,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-	//	robot.mast.set(ControlMode.PercentOutput, capPower(robot.controller.getRawAxis(5), joystickError));
+		robot.mast.set(ControlMode.PercentOutput, deadzone(robot.controller.getRawAxis(5), joystickError));
 	}
 
 	@Override

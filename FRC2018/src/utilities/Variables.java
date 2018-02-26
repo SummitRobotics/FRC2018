@@ -87,10 +87,10 @@ public class Variables {
 			leftDriveId = 21;
 			rightFollowerId = 36;
 			rightDriveId = 25;
-			clampIdA = 0;
-			clampIdB = 1;
-			extenderIdA = 2;
-			extenderIdB = 3;
+			clampIdA = 2;
+			clampIdB = 3;
+			extenderIdA = 0;
+			extenderIdB = 1;
 			mastId = 23;
 		}
 	}

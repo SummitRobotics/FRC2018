@@ -2,10 +2,8 @@ package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import templates.Action;
-import utilities.Variables;
 
 //TO-DO
 //Implement ControlMode.MotionMagic

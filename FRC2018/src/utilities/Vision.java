@@ -13,6 +13,7 @@ public class Vision extends Thread{
 	//initialize entries
 	public Vision() {
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
+		run();
 	}
 	
 	//keep updating the values
@@ -30,8 +31,8 @@ public class Vision extends Thread{
 	}
 	
 	//returns whether a contoured object is present
-	public boolean getTargetPresent() {
-		return targetPresent.getBoolean(false);
+	public double getTargetPresent() {
+		return targetPresent.getDouble(0);
 	}
 	
 	//return the size of contour relative to FOV

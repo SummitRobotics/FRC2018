@@ -17,8 +17,8 @@ public class RightRightScale extends AutoProgram {
 		commands[1].addMastD(1);
 		commands[0].addForwardD(323);
 		commands[0].addRotationGyro(90);
-		commands[0].addForwardT(2, .2);
-		//commands[0].addEject(1);
+		//commands[0].addForwardT(2, .2);
+		commands[0].addEject();
 	}
 
 }

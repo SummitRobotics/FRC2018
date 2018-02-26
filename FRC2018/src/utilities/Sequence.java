@@ -47,6 +47,11 @@ public class Sequence {
 		actions.add(new RotateGyro(robot, theta));
 	}
 	
+	public void addRotationToX(double theta) {
+		theta = (robot.getAbsoluteYaw() % 360) - theta;
+		actions.add(new RotateGyro(robot, theta));
+	}
+	
 	//rotate by x degrees with gyro with custom power
 	public void addRotationGyroCustomPower(double theta, double power) {
 		actions.add(new RotateGyro(robot, theta, power));
@@ -71,6 +76,14 @@ public class Sequence {
 	
 	public void addDelay(double time) {
 		actions.add(new Delay(robot, time));
+	}
+	
+	public void addTempIntake() {
+		actions.add(new Compliant(robot, 2, -.8));
+	}
+	
+	public void addEject() {
+		actions.add(new Compliant(robot, 2, 1));
 	}
 	
 	//inches to encoder

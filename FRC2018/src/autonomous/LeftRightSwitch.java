@@ -18,11 +18,11 @@ public class LeftRightSwitch extends AutoProgram{
 		commands[1].addMastD(1);
 		
 		commands[0].addForwardD(225);
-		commands[0].addRotationGyro(-90);
+		commands[0].addRotationGyro(90);
 		commands[0].addForwardD(170);
-		commands[0].addRotationGyro(-90);
-		commands[0].addForwardT(3, .2);
-		//commands[0].addEject(1);
+		commands[0].addRotationGyro(90);
+		commands[0].addForwardT(1, .2);
+		commands[0].addEject();
 	}
 
 }

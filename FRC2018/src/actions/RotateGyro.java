@@ -11,7 +11,7 @@ public class RotateGyro extends Action{
 	private double angle = 0;
 	private double initialDiff = 0;
 	//native units
-	private double error = 1;
+	private double error = 3;
 	//percent
 	private double minPower = .2;
 	private double maxPower = .6;

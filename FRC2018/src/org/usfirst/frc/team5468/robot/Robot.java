@@ -26,11 +26,12 @@ public class Robot extends IterativeRobot {
 		robot = new Hardware();
 		input = new Input(robot);
 		output = new Output(robot);
-		//lemonlight = new Vision();
+		lemonlight = new Vision();
 	}
 
 	@Override
 	public void autonomousInit() {
+		lemonlight = new Vision();
 		auto = input.getAuto();
 		robot.enableCompressor(true);
 		auto.autonomousInit();
@@ -38,12 +39,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		lemonlight.run();
 		output.update();
 		auto.autonomousPeriodic();
 	}
 
 	@Override
 	public void teleopInit(){
+		lemonlight = new Vision();
 		teleop = input.getTeleop();
 		robot.variables.setDriver(input.getDriver());
 		robot.enableCompressor(true);
@@ -52,7 +55,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		//lemonlight.run();
+		lemonlight.run();
 		output.update();
 		teleop.teleopPeriodic();
 	}
@@ -60,11 +63,11 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void disabledInit() {
+		lemonlight.interrupt();
 	}
 	
 	@Override 
 	public void disabledPeriodic() {
-		//lemonlight.run();
 		robot.refreshConfig();
 		output.update();
 	}

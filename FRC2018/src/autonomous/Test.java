@@ -15,7 +15,8 @@ public class Test extends AutoProgram{
 		initCommands(1);
 		int n = 1;
 		for(int a = 0; a < 4; ++a) {
-			commands[0].addForwardTGyro(.3, 5);
+			commands[0].addRotationGyro(90 * n);
+			n *= -1;
 		}
 	}
 }
