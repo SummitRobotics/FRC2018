@@ -65,7 +65,7 @@ public class Hardware {
 	//**************//
 	public Hardware() {
 		//A = polybot, B = Our actual robot
-		variables = new Variables("B");
+		variables = new Variables("A");
 		initGyro();
 		initCounter();
 		initGamepad();

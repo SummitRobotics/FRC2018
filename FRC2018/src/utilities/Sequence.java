@@ -47,6 +47,11 @@ public class Sequence {
 		actions.add(new RotateGyro(robot, theta));
 	}
 	
+	public void addRotationToX(double theta) {
+		theta = (robot.getAbsoluteYaw() % 360) - theta;
+		actions.add(new RotateGyro(robot, theta));
+	}
+	
 	//rotate by x degrees with gyro with custom power
 	public void addRotationGyroCustomPower(double theta, double power) {
 		actions.add(new RotateGyro(robot, theta, power));

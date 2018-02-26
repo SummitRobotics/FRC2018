@@ -72,6 +72,7 @@ public class Input {
 		
 		//teleop methods
 		teleop.add(new Standard(robot));
+		teleop.add(new Testing(robot));
 		
 		//different drivers
 		driver.add(new Programming());
