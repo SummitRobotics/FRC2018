@@ -3,6 +3,7 @@ package actions;
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Timer;
+import functions.PID;
 import templates.Action;
 
 //go forward for t seconds
@@ -30,10 +31,15 @@ public class ForwardT extends Action{
 		}
 		started = true;
 		if(robot.driveEnabled) {
-			robot.leftDrive.set(ControlMode.PercentOutput, power);
-			robot.rightDrive.set(ControlMode.PercentOutput, power);
+			robot.leftDrive.set(ControlMode.PercentOutput, smoothPower(robot.leftDrive.getMotorOutputPercent()));
+			robot.rightDrive.set(ControlMode.PercentOutput, smoothPower(robot.rightDrive.getMotorOutputPercent()));
 		}
 		update();
+	}
+	
+	private double smoothPower(double point) {
+		int n = 2;
+		return ((point*n) + power)/(1+n);
 	}
 
 	@Override

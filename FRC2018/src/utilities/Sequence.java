@@ -62,8 +62,12 @@ public class Sequence {
 		actions.add(new Piston(robot, x));
 	}
 	
-	public void addAutoClamp() {
+	public void addClamp() {
 		actions.add(new Piston(robot, robot.clamp));
+	}
+	
+	public void addExtend() {
+		actions.add(new Piston(robot, robot.extender));
 	}
 	
 	public void addMastD(double d) {
@@ -72,6 +76,10 @@ public class Sequence {
 	
 	public void addMastT(double time) {
 		actions.add(new MastT(robot, time));
+	}
+	
+	public void addMastT(double time, double power) {
+		actions.add(new MastT(robot, time, power));
 	}
 	
 	public void addDelay(double time) {
@@ -84,6 +92,10 @@ public class Sequence {
 	
 	public void addEject() {
 		actions.add(new Compliant(robot, 2, 1));
+	}
+	
+	public void addAutoCube() {
+		actions.add(new AutoIntake(robot));
 	}
 	
 	//inches to encoder

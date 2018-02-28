@@ -58,15 +58,12 @@ public class Input {
 		auto.add(new LeftLeftScale(robot));
 		auto.add(new CenterLeftSwitch(robot));
 		auto.add(new CenterRightSwitch(robot));
+		
 		//filthy power based auto methods
 		auto.add(new RightRightSwitchPower(robot));
-		auto.add(new RightRightScalePower(robot));
 		auto.add(new RightLeftSwitchPower(robot));
-		auto.add(new RightLeftScalePower(robot));
 		auto.add(new LeftRightSwitchPower(robot));
-		auto.add(new LeftRightScalePower(robot));
 		auto.add(new LeftLeftSwitchPower(robot));
-		auto.add(new LeftLeftScalePower(robot));
 		auto.add(new CenterLeftSwitchPower(robot));
 		auto.add(new CenterRightSwitchPower(robot));
 		
@@ -76,7 +73,6 @@ public class Input {
 		
 		//different drivers
 		driver.add(new Programming());
-		driver.add(new Alex());
 	}
 	
 	//**************//

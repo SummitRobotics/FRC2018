@@ -20,6 +20,12 @@ public class MastT extends Action {
 		super(r);
 		time = (long) t*1000;
 	}
+	
+	public MastT(Hardware r, double t, double p) {
+		super(r);
+		time = (long) t*1000;
+		power = p;
+	}
 
 	@Override
 	//go forward for a finite period of time

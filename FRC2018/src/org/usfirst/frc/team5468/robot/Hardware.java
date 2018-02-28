@@ -8,7 +8,9 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import utilities.Variables;
 import utilities.Vision;
@@ -32,6 +34,9 @@ public class Hardware {
 	//carriage lift
 	public TalonSRX mast;
 	
+	//winch
+	public VictorSPX winch;
+	
 	//gamepad1
 	public Joystick controller;
 	
@@ -43,8 +48,19 @@ public class Hardware {
 	private double relativeAngle;
 	
 	//hall effect encoder for the mast
-	private Counter hall;
+	public Counter hall;
 	
+	//limit switches
+	private DigitalInput intakeSwitch;
+	private DigitalInput lowerMastSwitch;
+	private DigitalInput higherMastSwitch;
+	
+	//limit switch counter, for better detection of events
+	public Counter intakeInteraction;
+	public Counter lowerMastInteraction;
+	public Counter higherMastInteraction;
+	
+	//the limelight camera
 	public Vision lemonlight;
 	
 	//Enabling all code to function
@@ -57,6 +73,7 @@ public class Hardware {
 	public boolean controllerPresent;
 	public boolean hallPresent;
 	public boolean lemonlightPresent;
+	public boolean limitSwitchPresent;
 	
 	//**************//
 	//
@@ -73,6 +90,7 @@ public class Hardware {
 		initPneumatics();
 		initIntake();
 		initMast();
+		initLimitSwitch();
 	}
 	
 	//**************//
@@ -123,6 +141,12 @@ public class Hardware {
 		}else {
 			refreshVision();
 		}
+		if(!limitSwitchPresent) {
+			initLimitSwitch();
+		}
+		else {
+			refreshLimit();
+		}
 	}
 	
 	//**************//
@@ -149,9 +173,11 @@ public class Hardware {
 		}
 	}
 	
+	//adjust distance per pulse
 	private void initCounter() {
 		try {
 			hall = new Counter(variables.getHallId());
+			hall.setDistancePerPulse(1);
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
@@ -164,6 +190,31 @@ public class Hardware {
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
+		}
+	}
+	
+	private void initLimitSwitch() {
+		try {
+			intakeSwitch = new DigitalInput(variables.getIntakeSwitchId());
+			lowerMastSwitch = new DigitalInput(variables.getLowerSwitchId());
+			higherMastSwitch = new DigitalInput(variables.getHigherSwitchId());
+			intakeInteraction = new Counter(intakeSwitch);
+			lowerMastInteraction = new Counter(lowerMastSwitch);
+			higherMastInteraction = new Counter(higherMastSwitch);
+			limitSwitchPresent = true;
+		}catch(Exception e) {
+			limitSwitchPresent = false;
+		}
+	}
+	
+	private void refreshLimit() {
+		try {
+			intakeInteraction.get();
+			lowerMastInteraction.get();
+			higherMastInteraction.get();
+			limitSwitchPresent = true;
+		}catch(Exception e) {
+			limitSwitchPresent = false;
 		}
 	}
 	
@@ -300,10 +351,10 @@ public class Hardware {
 		rightDrive.config_kD(0, Variables.d, Variables.delay);
 		
 		/* set acceleration and vcruise velocity - see documentation */
-		leftDrive.configMotionCruiseVelocity(1000, Variables.delay);
+		leftDrive.configMotionCruiseVelocity(3000, Variables.delay);
 		leftDrive.configMotionAcceleration(500, Variables.delay);
 		
-		rightDrive.configMotionCruiseVelocity(1000, Variables.delay);
+		rightDrive.configMotionCruiseVelocity(3000, Variables.delay);
 		rightDrive.configMotionAcceleration(500, Variables.delay);
 		
 		/* zero the sensor */
@@ -386,6 +437,7 @@ public class Hardware {
 	private void initMast() {
 		try {
 			mast = new TalonSRX(variables.getMastId());
+			winch = new VictorSPX(variables.getWinchId());
 			configMast();
 			mastEnabled = true;
 		}catch(Exception e) {
@@ -396,6 +448,7 @@ public class Hardware {
 	private void refreshMast() {
 		try {
 			mast.getMotorOutputPercent();
+			winch.getMotorOutputPercent();
 			mastEnabled = true;
 		}catch(Exception e) {
 			mastEnabled = false;
@@ -403,12 +456,8 @@ public class Hardware {
 	}
 	
 	private void configMast() {
-		mast.setInverted(variables.getMastPolarity());	
+		mast.setInverted(variables.getMastPolarity());
+		winch.setInverted(variables.getWinchPolarity());
 		mast.setSensorPhase(variables.getMastPhase());
-
-		leftDrive.configNominalOutputForward(0, Variables.delay);
-		leftDrive.configNominalOutputReverse(0, Variables.delay);
-		leftDrive.configPeakOutputForward(1, Variables.delay);
-		leftDrive.configPeakOutputReverse(-1, Variables.delay);
 	}
 }

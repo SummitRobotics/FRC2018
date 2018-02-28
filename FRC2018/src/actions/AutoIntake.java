@@ -5,16 +5,16 @@ import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import regulation.PID;
+import functions.PID;
 import templates.Action;
 import utilities.Vision;
 
 public class AutoIntake extends Action{
 	private PID visionPID = new PID(.02, 0, 0);
 	private PID lateralPID = new PID(.1, 0, 0);
-	private double maxOutput = .4;
+	private double maxOutput = .5;
 	private double maxError = 1;
-	private double targetSize = 10;
+	private double targetSize = 15;
 	
 	private double lastSteering = 0;
 	
@@ -44,7 +44,7 @@ public class AutoIntake extends Action{
 		started = true;
 		
 		if(robot.lemonlightPresent) {
-			if(Math.abs(robot.lemonlight.getOffsetDegrees()) > maxError) {
+			if(Math.abs(robot.lemonlight.getOffsetDegrees()) > maxError && robot.lemonlight.getArea() > 1) {
 				steering = visionPID.output(robot.lemonlight.getOffsetDegrees());
 				steering = smoothSteering(steering);
 			}
@@ -73,7 +73,7 @@ public class AutoIntake extends Action{
 
 	@Override
 	public void update() {
-		if(!robot.lemonlightPresent || robot.lemonlight.getTargetPresent() == 0) {
+		if(!robot.lemonlightPresent || (robot.lemonlight.getTargetPresent() == 1 && robot.lemonlight.getArea() >= targetSize)) {
 			finished = true;
 			robot.leftDrive.set(ControlMode.PercentOutput, 0);
 			robot.rightDrive.set(ControlMode.PercentOutput, 0);

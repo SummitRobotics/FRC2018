@@ -9,7 +9,7 @@ import actions.Piston;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import regulation.PID;
+import functions.PID;
 import templates.TeleopProgram;
 import utilities.Variables;
 
