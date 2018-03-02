@@ -25,9 +25,6 @@ public class ForwardD extends Action {
 		if(robot.driveEnabled) {
 			robot.leftDrive.set(ControlMode.MotionMagic, distance);
 			robot.rightDrive.set(ControlMode.MotionMagic, distance);
-			SmartDashboard.putNumber("x", distance);
-			SmartDashboard.putNumber("l", robot.leftDrive.getSelectedSensorPosition(0));
-			SmartDashboard.putNumber("r", robot.rightDrive.getSelectedSensorPosition(0));
 		}
 		update();
 	}

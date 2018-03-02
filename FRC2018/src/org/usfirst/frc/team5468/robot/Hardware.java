@@ -82,7 +82,7 @@ public class Hardware {
 	//**************//
 	public Hardware() {
 		//A = polybot, B = Our actual robot
-		variables = new Variables("A");
+		variables = new Variables("B");
 		initGyro();
 		initCounter();
 		initGamepad();
@@ -104,48 +104,48 @@ public class Hardware {
 		if(!gyroEnabled) {
 			initGyro();
 		}else {
-			refreshGyro();
+			//refreshGyro();
 		}
 		if(!hallPresent) {
 			initCounter();
 		}else {
-			refreshCounter();
+			//refreshCounter();
 		}
 		if(!controllerPresent) {
 			initGamepad();
 		}else {
-			refreshGamepad();
+			//refreshGamepad();
 		}
 		if(!driveEnabled) {
 			initDrive();
 		}else {
-			refreshDrive();
+			//refreshDrive();
 		}
 		if(!pneumaticsEnabled) {
 			initPneumatics();
 		}else {
-			refreshPneumatics();
+			//refreshPneumatics();
 		}
 		if(!intakeEnabled) {
 			initIntake();
 		}else {
-			refreshIntake();
+			//refreshIntake();
 		}
 		if(!mastEnabled) {
 			initMast();
 		}else {
-			refreshMast();
+			//refreshMast();
 		}
 		if(!lemonlightPresent) {
 			initVision();
 		}else {
-			refreshVision();
+			//refreshVision();
 		}
 		if(!limitSwitchPresent) {
 			initLimitSwitch();
 		}
 		else {
-			refreshLimit();
+			//refreshLimit();
 		}
 	}
 	

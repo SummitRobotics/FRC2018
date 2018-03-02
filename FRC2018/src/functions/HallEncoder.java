@@ -7,6 +7,7 @@ public class HallEncoder {
 	
 	public HallEncoder(Counter h) {
 		hall = h;
+		initEncoder();
 	}
 	
 	private void initEncoder() {

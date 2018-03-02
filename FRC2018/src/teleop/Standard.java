@@ -9,6 +9,7 @@ import actions.Piston;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import functions.MotorControl;
 import functions.PID;
 import templates.TeleopProgram;
 import utilities.Variables;
@@ -30,6 +31,10 @@ public class Standard extends TeleopProgram{
 	protected double threshold;
 	protected double joystickError;
 	
+	//motor rampimg
+	private double maxDrivePowerChange = .09;
+	MotorControl leftRamping = new MotorControl(maxDrivePowerChange);
+	MotorControl rightRamping = new MotorControl(maxDrivePowerChange);
 	
 	public Standard(Hardware r) {
 		super(r, "Standard");
@@ -146,21 +151,21 @@ public class Standard extends TeleopProgram{
 		double forwardsPower = toExponential(deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3);
 		double turningPower = (toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3))*0.8;
 		
-		double leftPower = clamp(forwardsPower+turningPower, -1, 1);
-		double rightPower = -clamp(forwardsPower-turningPower, -1, 1);
+		double leftPower = clamp(deadzone(leftRamping.rampPower(forwardsPower),.1)+turningPower, -1, 1);
+		double rightPower = clamp(deadzone(rightRamping.rampPower(forwardsPower),.1)-turningPower, -1, 1);
 				
 		robot.leftDrive.set(ControlMode.PercentOutput, leftPower);
-		robot.rightDrive.set(ControlMode.PercentOutput, -rightPower);
+		robot.rightDrive.set(ControlMode.PercentOutput, rightPower);
 	}
 	
-	public static double toExponential(double value, double exponent)
+	public double toExponential(double value, double exponent)
 	{
 		value = Math.pow(Math.abs(value), exponent) * Math.signum(value);
 		
 		return value;
 }
 	
-	public static double deadzone(double joystickValue, double deadzone)
+	public double deadzone(double joystickValue, double deadzone)
 	{
 		//if the joystickValue falls within the range of the deadzone...
 		if (Math.abs(joystickValue) < deadzone)
@@ -172,7 +177,7 @@ public class Standard extends TeleopProgram{
 		return joystickValue;
 }
 	
-	public static double clamp(double value, double min, double max)
+	public double clamp(double value, double min, double max)
 	{
 		//Clamp the value to not be lower than the minimum value
 		if(value < min)
@@ -212,7 +217,7 @@ public class Standard extends TeleopProgram{
 		if(robot.pneumaticsEnabled) {
 			if(robot.clamp.get() == DoubleSolenoid.Value.kReverse) {
 				//if(!compression detected): off
-				autoOutput -= power;		
+				//autoOutput -= power;		
 			}
 			else {
 				autoOutput = 0;
@@ -241,7 +246,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-		robot.mast.set(ControlMode.PercentOutput, deadzone(robot.controller.getRawAxis(5), joystickError));
+		robot.winch.set(ControlMode.PercentOutput, deadzone(robot.controller.getRawAxis(5), joystickError));
 	}
 
 	@Override

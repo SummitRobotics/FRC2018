@@ -5,8 +5,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import utilities.Sequence;
 
 public abstract class AutoProgram {
-	public Hardware robot;
-	public String programName;
+	protected Hardware robot;
+	private String programName;
 	protected Sequence[] commands;
 	
 	public AutoProgram(Hardware r, String name)

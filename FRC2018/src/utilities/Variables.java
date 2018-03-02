@@ -88,9 +88,9 @@ public class Variables {
 			leftSensorPhase = false;
 			rightSensorPhase = false;
 			rightReversedI = true;
-			leftIntakeId = 38;
-			winchId = 37;
-			rightIntakeId = 34;
+			leftIntakeId = 34;
+			winchId = 38;
+			rightIntakeId = 38;
 			leftFollowerId = 32;
 			leftDriveId = 21;
 			rightFollowerId = 36;

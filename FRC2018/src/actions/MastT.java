@@ -4,13 +4,15 @@ import java.time.Clock;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
 public class MastT extends Action {
 
 	//time in seconds
-	private Long time;
-	private Clock timer;
+	private double time;
+	private Timer clock;
 	
 	//default power - for safe testing purposes
 	private double power = .8;
@@ -18,12 +20,12 @@ public class MastT extends Action {
 	//forward for t seconds with default power
 	public MastT(Hardware r, double t) {
 		super(r);
-		time = (long) t*1000;
+		time = t;
 	}
 	
 	public MastT(Hardware r, double t, double p) {
 		super(r);
-		time = (long) t*1000;
+		time = t;
 		power = p;
 	}
 
@@ -31,7 +33,8 @@ public class MastT extends Action {
 	//go forward for a finite period of time
 	public void run() {	
 		if(!started) {
-			time += timer.millis();
+			clock = new Timer();
+			clock.start();
 		}
 		started = true;
 		setPower(power);
@@ -40,7 +43,7 @@ public class MastT extends Action {
 
 	@Override
 	public void update() {
-		if(time < timer.millis()) {
+		if(time < clock.get()) {
 			setPower(0);
 			finished = true;
 		}

@@ -7,7 +7,7 @@ import autonomous.*;
 import drivers.*;
 import teleop.*;
 import templates.*;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -48,6 +48,7 @@ public class Input {
 	private void addExistingClasses() {
 		//glorious encoder based auto movement
 		auto.add(new Test(robot));
+		auto.add(new AutoForward(robot));
 		auto.add(new RightRightSwitch(robot));
 		auto.add(new RightRightScale(robot));
 		auto.add(new RightLeftSwitch(robot));
@@ -88,13 +89,13 @@ public class Input {
 	
 	private void displayAutoPrereq() {
 		ArrayList<String> pos = new ArrayList<String>();
-		pos.add("LEFT");
-		pos.add("RIGHT");
 		pos.add("CENTER");
+		pos.add("RIGHT");
+		pos.add("LEFT");
 		
 		ArrayList<String> tar = new ArrayList<String>();
-		tar.add("SCALE");
 		tar.add("SWITCH");
+		tar.add("SCALE");
 		
 		position = new UserInterface(pos, "Position");
 		target = new UserInterface(tar, "Target");
@@ -102,13 +103,53 @@ public class Input {
 	
 	private void displayEncoderAuto() {
 		ArrayList<String> enc = new ArrayList<String>();
-		enc.add("false");
 		enc.add("true");
+		enc.add("false");
 		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
 	}
 	
 	public AutoProgram getAuto() {
 		return getAuto(autoChoice.getInput());
+		/*for(int a = 0; a < auto.size(); ++a) {
+			SmartDashboard.putString("AutoKEY", getKey());
+			if(auto.get(a).getName().equals(getKey())) {
+				return auto.get(a);
+			}
+		}
+		
+		for(int a = 0; a < auto.size(); ++a) {
+			if(auto.get(a).getName() == "DEF") {
+				return auto.get(a);
+			}
+		}
+		return null;
+		*/
+	}
+	
+	//key generator for autonomous
+	private String getKey() {
+		char[] key = {' ',' ',' ',' '};
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		if(gameData.length() > 0){
+			//target
+			key[0] = getTarget();
+			//side of target
+			if(getTarget() == 'W') {
+				key[1] = gameData.charAt(0);
+			}
+			else {
+				key[1] = gameData.charAt(1);
+			}
+			//starting position
+			key[2] = getPosition();
+			if(!getEncoder()) {
+				key[3] = 'P';
+			}
+		}
+		else {
+			return "DEF";
+		}
+		return String.valueOf(key).trim();
 	}
 	
 	//**************//
