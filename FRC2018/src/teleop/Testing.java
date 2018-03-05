@@ -1,9 +1,6 @@
 package teleop;
 
 import org.usfirst.frc.team5468.robot.Hardware;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import actions.MastT;
 import templates.TeleopProgram;
 

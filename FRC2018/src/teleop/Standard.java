@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import functions.MotorControl;
-import functions.PID;
 import templates.TeleopProgram;
-import utilities.Variables;
 
 public class Standard extends TeleopProgram{
 	//pneumatics
@@ -24,12 +22,8 @@ public class Standard extends TeleopProgram{
 	//auto intake
 	private AutoIntake collect;
 	
-	//variables
-	protected double lateralExponent;
-	protected double rotateSensitivity;
-	protected double maxPower;
-	protected double threshold;
-	protected double joystickError;
+	//joystick error
+	private double joystickError = .3;
 	
 	//motor rampimg
 	private double maxDrivePowerChange = .09;
@@ -44,11 +38,6 @@ public class Standard extends TeleopProgram{
 
 	@Override
 	public void teleopInit() {
-		lateralExponent = robot.variables.getDriver().getLateralExponent();
-		maxPower = robot.variables.getDriver().getMaxPower();
-		rotateSensitivity = robot.variables.getDriver().getRotationSensitivity();
-		threshold = robot.variables.getDriver().getThreshold();
-		joystickError = robot.variables.getDriver().getJoystickError();
 		collect = new AutoIntake(robot);
 	}
 
@@ -72,10 +61,6 @@ public class Standard extends TeleopProgram{
 			if(robot.lemonlightPresent) {
 				//autoCollect();
 			}
-		}
-		if(robot.controller.getRawButton(4)) {
-			robot.leftDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
-			robot.rightDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
 		}
 	}
 	
@@ -235,6 +220,7 @@ public class Standard extends TeleopProgram{
 		robot.winch.set(ControlMode.PercentOutput, controllerOutput);
 	}
 	
+	@SuppressWarnings("unused")
 	private void autoCollect() {
 		if(robot.controller.getRawButton(2)) {
 			collect.run();

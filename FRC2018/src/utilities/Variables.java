@@ -16,7 +16,6 @@ public class Variables {
 	
 	//defines the variables specific to the robot
 	private String robotName;
-	private Driver driver;
 	
 	//necessary for correct distance calculation
 	private double wheelDiam;
@@ -171,14 +170,6 @@ public class Variables {
 	
 	public double getWidth() {
 		return driveTrainWidth;
-	}
-	
-	public void setDriver(Driver x) {
-		driver = x;
-	}
-	
-	public Driver getDriver() {
-		return driver;
 	}
 	
 	public int getHallId() {

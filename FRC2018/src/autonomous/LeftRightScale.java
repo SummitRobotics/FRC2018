@@ -10,21 +10,18 @@ public class LeftRightScale extends AutoProgram{
 	}
 
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addMastT(10);
+		commands.addSequence(0, 1);
 		
-		commands[1].addClamp();
-		commands[1].addMastT(10);
-		
-		commands[0].addForwardD(230);
-		commands[0].addRotationGyro(-90);
-		commands[0].addForwardD(220);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardD(90);
-		commands[0].addRotationGyro(90);
-		//commands[0].addForwardT(2, .2);
-		commands[0].addExtend();
-		commands[0].addClamp();
+		commands.addForwardD(230);
+		commands.addRotationGyro(-90);
+		commands.addForwardD(220);
+		commands.addRotationGyro(90);
+		commands.addForwardD(90);
+		commands.addRotationGyro(90);
+		commands.addExtend();
+		commands.addClamp();
 	}
 
 }

@@ -1,16 +1,13 @@
 package utilities;
 
 import java.util.ArrayList;
-
 import org.usfirst.frc.team5468.robot.Hardware;
 import autonomous.*;
-import drivers.*;
 import teleop.*;
 import templates.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 //**************//
 //
@@ -23,12 +20,10 @@ public class Input {
 	//pre existing classes
 	private ArrayList<AutoProgram> auto = new ArrayList<AutoProgram>();
 	private ArrayList<TeleopProgram> teleop = new ArrayList<TeleopProgram>();
-	private ArrayList<Driver> driver = new ArrayList<Driver>();
 	
 	//optional user input
 	private UserInterface teleopChoice;
 	private UserInterface autoChoice;
-	private UserInterface driveChoice;
 	private UserInterface encoderAuto;
 	
 	//required autonomous information
@@ -41,7 +36,6 @@ public class Input {
 		displayAutoInformation();
 		displayAutoPrereq();
 		displayTeleopInformation();
-		displayDrivers();
 		displayEncoderAuto();
 	}
 	
@@ -72,8 +66,6 @@ public class Input {
 		teleop.add(new Standard(robot));
 		teleop.add(new Testing(robot));
 		
-		//different drivers
-		driver.add(new Programming());
 	}
 	
 	//**************//
@@ -96,6 +88,7 @@ public class Input {
 		ArrayList<String> tar = new ArrayList<String>();
 		tar.add("SWITCH");
 		tar.add("SCALE");
+		tar.add("LINE");
 		
 		position = new UserInterface(pos, "Position");
 		target = new UserInterface(tar, "Target");
@@ -164,16 +157,8 @@ public class Input {
 		teleopChoice = new UserInterface(convertTeleop(teleop), "Teleop");
 	}
 	
-	private void displayDrivers() {
-		driveChoice = new UserInterface(convertDriver(driver), "Driver");
-	}
-	
 	public TeleopProgram getTeleop() {
 		return getTeleop(teleopChoice.getInput());
-	}
-	
-	public Driver getDriver() {
-		return getDriver(driveChoice.getInput());
 	}
 	
 	//**************//
@@ -182,14 +167,6 @@ public class Input {
 	//	UserInterface Conversion
 	//
 	//**************//
-	private ArrayList<String> convertDriver(ArrayList<Driver> dr) {
-		ArrayList<String> values = new ArrayList<String>();
-		for(int a = 0; a < dr.size(); ++a) {
-			values.add(dr.get(a).getName());
-		}
-		return values;
-	}
-	
 	private ArrayList<String> convertAuto(ArrayList<AutoProgram> au) {
 		ArrayList<String> values = new ArrayList<String>();
 		for(int a = 0; a < au.size(); ++a) {
@@ -212,15 +189,6 @@ public class Input {
 			values.add(en.get(a));
 		}
 		return values;
-	}
-	
-	private Driver getDriver(String dr) {
-		for(int a = 0; a < driver.size(); ++a) {
-			if(driver.get(a).getName() == dr) {
-				return driver.get(a);
-			}
-		}
-		return null;
 	}
 	
 	private TeleopProgram getTeleop(String te) {

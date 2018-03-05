@@ -9,19 +9,18 @@ public class RightLeftSwitchPower extends AutoProgram{
 	}
 
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addMastT(10);
+		commands.addSequence(0, 1);
 		
-		commands[1].addClamp();
-		commands[1].addMastT(10);
-		
-		commands[0].addForwardT(5, .7);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardT(5, .7);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardT(3, .2);
-		commands[0].addExtend();
-		commands[0].addClamp();
+		commands.addForwardT(5, .7);
+		commands.addRotationGyro(90);
+		commands.addForwardT(5, .7);
+		commands.addRotationGyro(90);
+		commands.addForwardT(3, .2);
+		commands.addExtend();
+		commands.addClamp();
+		commands.addSequence(0, 2);
 	}
 
 }

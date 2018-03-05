@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import utilities.Variables;
 import utilities.Vision;
@@ -104,48 +103,48 @@ public class Hardware {
 		if(!gyroEnabled) {
 			initGyro();
 		}else {
-			//refreshGyro();
+			refreshGyro();
 		}
 		if(!hallPresent) {
 			initCounter();
 		}else {
-			//refreshCounter();
+			refreshCounter();
 		}
 		if(!controllerPresent) {
 			initGamepad();
 		}else {
-			//refreshGamepad();
+			refreshGamepad();
 		}
 		if(!driveEnabled) {
 			initDrive();
 		}else {
-			//refreshDrive();
+			refreshDrive();
 		}
 		if(!pneumaticsEnabled) {
 			initPneumatics();
 		}else {
-			//refreshPneumatics();
+			refreshPneumatics();
 		}
 		if(!intakeEnabled) {
 			initIntake();
 		}else {
-			//refreshIntake();
+			refreshIntake();
 		}
 		if(!mastEnabled) {
 			initMast();
 		}else {
-			//refreshMast();
+			refreshMast();
 		}
 		if(!lemonlightPresent) {
 			initVision();
 		}else {
-			//refreshVision();
+			refreshVision();
 		}
 		if(!limitSwitchPresent) {
 			initLimitSwitch();
 		}
 		else {
-			//refreshLimit();
+			refreshLimit();
 		}
 	}
 	

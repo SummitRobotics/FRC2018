@@ -1,8 +1,6 @@
 package utilities;
+
 import org.usfirst.frc.team5468.robot.Hardware;
-
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Output {

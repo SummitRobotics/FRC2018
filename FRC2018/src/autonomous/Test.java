@@ -9,10 +9,10 @@ public class Test extends AutoProgram{
 	public Test(Hardware r) {
 		super(r, "KEY");
 	}
-
+	
 	@Override
-	public void autonomousInit() {
-		initCommands(1);
-		commands[0].addClamp();
+	public void addActions() {
+		commands.addClamp();
+		commands.addSequence(0, 1);
 	}
 }
