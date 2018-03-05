@@ -119,7 +119,9 @@ public class Sequence {
 		runningList = new ArrayList<Action>();
 	}
 	
-	public void addSequence(int[] prefix, int suffix) {
+	//compile added runninglist into a subsequence requiring two flags
+	public void addSequence(int prefixA, int prefixB, int suffix) {
+		int[] prefix = {prefixA, prefixB};
 		//compile the aforementioned runningList with ending and closing flags
 		branches.add(new Subsequence(runningList, prefix, suffix));
 		//clear the list of runningList
