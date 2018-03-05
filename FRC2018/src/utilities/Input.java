@@ -7,7 +7,7 @@ import autonomous.*;
 import drivers.*;
 import teleop.*;
 import templates.*;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -48,6 +48,7 @@ public class Input {
 	private void addExistingClasses() {
 		//glorious encoder based auto movement
 		auto.add(new Test(robot));
+		auto.add(new AutoForward(robot));
 		auto.add(new RightRightSwitch(robot));
 		auto.add(new RightRightScale(robot));
 		auto.add(new RightLeftSwitch(robot));
@@ -58,15 +59,12 @@ public class Input {
 		auto.add(new LeftLeftScale(robot));
 		auto.add(new CenterLeftSwitch(robot));
 		auto.add(new CenterRightSwitch(robot));
+		
 		//filthy power based auto methods
 		auto.add(new RightRightSwitchPower(robot));
-		auto.add(new RightRightScalePower(robot));
 		auto.add(new RightLeftSwitchPower(robot));
-		auto.add(new RightLeftScalePower(robot));
 		auto.add(new LeftRightSwitchPower(robot));
-		auto.add(new LeftRightScalePower(robot));
 		auto.add(new LeftLeftSwitchPower(robot));
-		auto.add(new LeftLeftScalePower(robot));
 		auto.add(new CenterLeftSwitchPower(robot));
 		auto.add(new CenterRightSwitchPower(robot));
 		
@@ -76,7 +74,6 @@ public class Input {
 		
 		//different drivers
 		driver.add(new Programming());
-		driver.add(new Alex());
 	}
 	
 	//**************//
@@ -92,13 +89,13 @@ public class Input {
 	
 	private void displayAutoPrereq() {
 		ArrayList<String> pos = new ArrayList<String>();
-		pos.add("LEFT");
-		pos.add("RIGHT");
 		pos.add("CENTER");
+		pos.add("RIGHT");
+		pos.add("LEFT");
 		
 		ArrayList<String> tar = new ArrayList<String>();
-		tar.add("SCALE");
 		tar.add("SWITCH");
+		tar.add("SCALE");
 		
 		position = new UserInterface(pos, "Position");
 		target = new UserInterface(tar, "Target");
@@ -106,13 +103,55 @@ public class Input {
 	
 	private void displayEncoderAuto() {
 		ArrayList<String> enc = new ArrayList<String>();
-		enc.add("false");
-		enc.add("true");
+		enc.add("AUTOMATIC");
+		enc.add("MANUAL");
 		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
 	}
 	
 	public AutoProgram getAuto() {
-		return getAuto(autoChoice.getInput());
+		if(getEncoder() == true){
+			for(int a = 0; a < auto.size(); ++a) {
+				SmartDashboard.putString("AutoKEY", getKey());
+				if(auto.get(a).getName().equals(getKey())) {
+					return auto.get(a);
+				}
+			}
+			
+			for(int a = 0; a < auto.size(); ++a) {
+				if(auto.get(a).getName() == "STRAIGHT!") {
+					return auto.get(a);
+				}
+			}
+			return null;
+		}else{
+			return getAuto(autoChoice.getInput());
+		}
+	}
+	
+	//key generator for autonomous
+	private String getKey() {
+		char[] key = {' ',' ',' ',' '};
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		if(gameData.length() > 0){
+			//target
+			key[0] = getTarget();
+			//side of target
+			if(getTarget() == 'W') {
+				key[1] = gameData.charAt(0);
+			}
+			else {
+				key[1] = gameData.charAt(1);
+			}
+			//starting position
+			key[2] = getPosition();
+			if(!getEncoder()) {
+				key[3] = 'P';
+			}
+		}
+		else {
+			return "DEF";
+		}
+		return String.valueOf(key).trim();
 	}
 	
 	//**************//
@@ -185,7 +224,7 @@ public class Input {
 	}
 	
 	private TeleopProgram getTeleop(String te) {
-		for(int a = 0; a < driver.size(); ++a) {
+		for(int a = 0; a < teleop.size(); ++a) {
 			if(teleop.get(a).getName() == te) {
 				return teleop.get(a);
 			}
@@ -203,7 +242,7 @@ public class Input {
 	}
 	
 	private boolean getEncoder() {
-		if(encoderAuto.getInput() == "true") {
+		if(encoderAuto.getInput() == "AUTOMATIC") {
 			return true;
 		}
 		else {

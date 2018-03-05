@@ -2,32 +2,39 @@ package teleop;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 
-import actions.AutoIntake;
-import actions.RotateGyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import regulation.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import actions.MastT;
 import templates.TeleopProgram;
 
 public class Testing extends TeleopProgram {
-	private AutoIntake collect;
-	
+	private MastT mastAction;
 	public Testing(Hardware r) {
 		super(r, "Testing");
 	}
 
 	@Override
 	public void teleopInit() {
-		collect = new AutoIntake(robot);
+		mastAction = new MastT(robot, 5, .5);
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		double p = SmartDashboard.getNumber("P", 0);
-		double i = SmartDashboard.getNumber("I", 0);
-		double d = SmartDashboard.getNumber("D", 0);
+		if(robot.controller.getRawButton(2)){
+			mastAction.run();
+		}
+	}
+	
+	public static double deadzone(double joystickValue, double deadzone)
+	{
+		//if the joystickValue falls within the range of the deadzone...
+		if (Math.abs(joystickValue) < deadzone)
+		{
+			//Set the joystick value to 0
+			joystickValue = 0;
+		}
 		
-		double[] x = {p,i,d};
-		//collect.updatePID(x);
+		return joystickValue;
 	}
 
 	@Override

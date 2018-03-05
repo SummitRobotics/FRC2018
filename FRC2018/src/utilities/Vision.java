@@ -13,7 +13,7 @@ public class Vision extends Thread{
 	//initialize entries
 	public Vision() {
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
-		run();
+	 	run();
 	}
 	
 	//keep updating the values

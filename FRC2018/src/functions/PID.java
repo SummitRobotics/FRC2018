@@ -1,4 +1,4 @@
-package regulation;
+package functions;
 
 public class PID {
 	//proportional

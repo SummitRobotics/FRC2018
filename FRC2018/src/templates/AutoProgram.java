@@ -2,13 +2,15 @@ package templates;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import utilities.Sequence;
 
 public abstract class AutoProgram {
-	public Hardware robot;
-	public String programName;
+	protected Hardware robot;
+	private String programName;
 	protected Sequence[] commands;
-	
+
 	public AutoProgram(Hardware r, String name)
 	{
 		robot = r;
@@ -28,6 +30,7 @@ public abstract class AutoProgram {
 	public void autonomousDisabledInit() {
 		robot.leftDrive.set(ControlMode.PercentOutput, 0);
 		robot.rightDrive.set(ControlMode.PercentOutput, 0);
+		robot.clamp.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	public String getName() {

@@ -2,17 +2,17 @@ package autonomous;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import templates.AutoProgram;
-import utilities.Variables;
 
-public class Test extends AutoProgram{
+public class AutoForward extends AutoProgram{
 
-	public Test(Hardware r) {
-		super(r, "KEY");
+	public AutoForward(Hardware r) {
+		super(r, "STRAIGHT!");
 	}
 
 	@Override
 	public void autonomousInit() {
 		initCommands(1);
-		commands[0].addClamp();
+		commands[0].addForwardD(144);
 	}
+
 }

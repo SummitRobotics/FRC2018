@@ -13,8 +13,8 @@ public class RightLeftScale extends AutoProgram {
 	public void autonomousInit() {
 		initCommands(2);
 		
-		commands[1].addAutoClamp();
-		commands[1].addMastD(1);
+		commands[1].addClamp();
+		commands[1].addMastT(10);
 		
 		commands[0].addForwardD(230);
 		commands[0].addRotationGyro(90);
@@ -23,7 +23,8 @@ public class RightLeftScale extends AutoProgram {
 		commands[0].addForwardD(90);
 		commands[0].addRotationGyro(-90);
 		//commands[0].addForwardT(2, .2);
-		commands[0].addEject();
+		commands[0].addExtend();
+		commands[0].addClamp();
 	}
 
 }

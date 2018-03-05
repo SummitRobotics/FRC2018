@@ -1,54 +1,71 @@
 package actions;
 
-import java.time.Clock;
-
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
 public class MastT extends Action {
-
-	//time in seconds
-	private Long time;
-	private Clock timer;
+	//duration
+	private double time;
+	//timer
+	private Timer clock;
+	//default power
+	private double power = .5;
 	
-	//default power - for safe testing purposes
-	private double power = .8;
-	
-	//forward for t seconds with default power
+	//constructor
 	public MastT(Hardware r, double t) {
 		super(r);
-		time = (long) t*1000;
-	}
-
-	@Override
-	//go forward for a finite period of time
-	public void run() {	
-		if(!started) {
-			time += timer.millis();
-		}
-		started = true;
-		setPower(power);
-		update();
-	}
-
-	@Override
-	public void update() {
-		if(time < timer.millis()) {
-			setPower(0);
-			finished = true;
-		}
+		time = t;
 	}
 	
-	private void setPower(double x) {
-		if(robot.mastEnabled) {
-			robot.mast.set(ControlMode.PercentOutput, x);
-		}
+	//constructor 2
+	public MastT(Hardware r, double t, double p) {
+		super(r);
+		time = t;
+		power = p;
 	}
 	
 	@Override
-	public String getAction() {
-		return "Time-based Mast";
+	public void actionInit() {
+		//start timer
+		clock = new Timer();
+		clock.start();
 	}
 
+	@Override
+	public void actionPeriodic() {
+		//if the mast is enabled
+		if(robot.mastEnabled){
+			//then set power smoothly
+			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
+		}
+	}
+	
+	//this prevents a 0 to X acceleration jump in the first iteration of the action
+	private double smoothPower(double point) {
+		int n = 2;
+		return ((point*n) + power)/(1+n);
+	}
+
+	@Override
+	public boolean actionFinished() {
+		//if the timer has elapsed or the mast disabled
+		if(clock.get() > time || !robot.mastEnabled) {
+			//then finish the action
+			//set the mast to remain in position
+			robot.mast.set(ControlMode.PercentOutput, 0.1);
+			clock.stop();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	@Override
+		public String getAction() {
+			return "Time-based Mast";
+	}
 }

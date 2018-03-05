@@ -1,12 +1,17 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import functions.HallEncoder;
 import templates.Action;
 
 public class MastD extends Action {
 	//distances
 	private double target;
+	private double offset;
+	private double maxPower = 1;
+	private double minPower = .1;
+	
+	private HallEncoder encoder;
 	
 	//constructor
 	public MastD(Hardware r, double distance) {
@@ -15,27 +20,29 @@ public class MastD extends Action {
 	}
 
 	@Override
-	//travel distance - beta
-	public void run() {
-		started = true;
-		//setMast(target);
-		update();
+	public void actionInit() {
+		encoder = new HallEncoder(robot.hall);
 	}
-	
+
 	@Override
-	public void update() {
-		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < 500 || !robot.mastEnabled) {
-			setMast(robot.mast.getSelectedSensorPosition(0));
-			finished = true;
-		}
-	}
-	
-	private void setMast(double t) {
+	public void actionPeriodic() {
 		if(robot.mastEnabled) {
-			robot.mast.set(ControlMode.MotionMagic, t);
+			
 		}
 	}
 
+	@Override
+	public boolean actionFinished() {
+		//if the target has been reached or some technical problems discovered
+		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < offset || !robot.mastEnabled) {
+			//then finish action
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	@Override
 	public String getAction() {
 		return "Distance";

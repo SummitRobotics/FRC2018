@@ -53,7 +53,14 @@ public class Variables {
 	private boolean mastReversed = false;
 	private boolean mastPhase = false;
 	
+	//ramp
+	private int winchId;
+	private boolean winchReversed = false;
+	
 	private int hallId;
+	private int intakeSwitchId;
+	private int lowerMastId;
+	private int higherMastId;
 
 	public Variables(String name) {
 		robotName = name;
@@ -81,8 +88,9 @@ public class Variables {
 			leftSensorPhase = false;
 			rightSensorPhase = false;
 			rightReversedI = true;
-			leftIntakeId = 37;
-			rightIntakeId = 34;
+			leftIntakeId = 34;
+			winchId = 37;
+			rightIntakeId = 38;
 			leftFollowerId = 32;
 			leftDriveId = 21;
 			rightFollowerId = 36;
@@ -92,6 +100,7 @@ public class Variables {
 			extenderIdA = 0;
 			extenderIdB = 1;
 			mastId = 23;
+			mastReversed = true;
 		}
 	}
 	
@@ -174,5 +183,25 @@ public class Variables {
 	
 	public int getHallId() {
 		return hallId;
+	}
+	
+	public int getIntakeSwitchId() {
+		return intakeSwitchId;
+	}
+	
+	public int getLowerSwitchId() {
+		return lowerMastId;
+	}
+	
+	public int getHigherSwitchId() {
+		return higherMastId;
+	}
+	
+	public int getWinchId() {
+		return winchId;
+	}
+	
+	public boolean getWinchPolarity() {
+		return winchReversed;
 	}
 }
