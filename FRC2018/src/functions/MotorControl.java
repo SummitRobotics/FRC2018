@@ -9,12 +9,15 @@ public class MotorControl {
 	}
 	
 	public double rampPower(double p) {
-		double newPower = 0;
+		double newPower = lastMotorPower;
+		if(Math.abs(p - lastMotorPower) < 10*maxChange){
+			return newPower;
+		}
 		if(lastMotorPower > p) {
-			newPower = lastMotorPower - (2*maxChange);
+			newPower -= (2*maxChange);
 		}
 		else {
-			newPower = lastMotorPower + maxChange;
+			newPower += maxChange;
 		}		
 		lastMotorPower = newPower;
 		return newPower;

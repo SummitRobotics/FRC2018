@@ -351,10 +351,10 @@ public class Hardware {
 		rightDrive.config_kD(0, Variables.d, Variables.delay);
 		
 		/* set acceleration and vcruise velocity - see documentation */
-		leftDrive.configMotionCruiseVelocity(3000, Variables.delay);
+		leftDrive.configMotionCruiseVelocity(1000, Variables.delay);
 		leftDrive.configMotionAcceleration(500, Variables.delay);
 		
-		rightDrive.configMotionCruiseVelocity(3000, Variables.delay);
+		rightDrive.configMotionCruiseVelocity(1000, Variables.delay);
 		rightDrive.configMotionAcceleration(500, Variables.delay);
 		
 		/* zero the sensor */

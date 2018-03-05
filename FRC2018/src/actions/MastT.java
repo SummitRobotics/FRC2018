@@ -1,7 +1,5 @@
 package actions;
 
-import java.time.Clock;
-
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -9,13 +7,9 @@ import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
 public class MastT extends Action {
-
-	//time in seconds
 	private double time;
 	private Timer clock;
-	
-	//default power - for safe testing purposes
-	private double power = .8;
+	private double power = .5;
 	
 	//forward for t seconds with default power
 	public MastT(Hardware r, double t) {
@@ -37,21 +31,23 @@ public class MastT extends Action {
 			clock.start();
 		}
 		started = true;
-		setPower(power);
+		if(robot.mastEnabled){
+			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
+		}
 		update();
+	}
+	
+	private double smoothPower(double point) {
+		int n = 2;
+		return ((point*n) + power)/(1+n);
 	}
 
 	@Override
 	public void update() {
-		if(time < clock.get()) {
-			setPower(0);
+		if(clock.get() > time || !robot.mastEnabled) {
+			robot.mast.set(ControlMode.PercentOutput, 0.1);
+			clock.stop();
 			finished = true;
-		}
-	}
-	
-	private void setPower(double x) {
-		if(robot.mastEnabled) {
-			robot.mast.set(ControlMode.PercentOutput, x);
 		}
 	}
 	

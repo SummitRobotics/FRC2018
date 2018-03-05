@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team5468.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import templates.*;
 import utilities.*;
@@ -35,6 +36,7 @@ public class Robot extends IterativeRobot {
 		auto = input.getAuto();
 		robot.enableCompressor(true);
 		auto.autonomousInit();
+		robot.clamp.set(DoubleSolenoid.Value.kOff);
 	}
 
 	@Override

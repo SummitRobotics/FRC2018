@@ -61,6 +61,7 @@ public class Standard extends TeleopProgram{
 			if(robot.pneumaticsEnabled) {
 				actuateClamp();
 				actuateExtender();
+				release();
 			}
 			if(robot.intakeEnabled) {
 				intake();
@@ -69,7 +70,7 @@ public class Standard extends TeleopProgram{
 				mast();
 			}
 			if(robot.lemonlightPresent) {
-				autoCollect();
+				//autoCollect();
 			}
 		}
 		if(robot.controller.getRawButton(4)) {
@@ -107,6 +108,18 @@ public class Standard extends TeleopProgram{
 		}
 	}
 	
+	//**************//
+	//
+	//	Clamp Toggle : X		
+	//
+	//**************//
+	private void release() {
+		if(robot.controller.getRawButton(2)) {
+			robot.extender.set(DoubleSolenoid.Value.kReverse);
+			robot.clamp.set(DoubleSolenoid.Value.kForward);
+		}
+	}
+		
 	//**************//
 	//
 	//	Extender Toggle : A	
@@ -148,14 +161,21 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void rocketDrive() {	
-		double forwardsPower = toExponential(deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3);
-		double turningPower = (toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3))*0.8;
+		double forwardsPower = (toExponential(deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3))*0.85;
+		double turningPower = (toExponential(deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3))*0.9;
 		
-		double leftPower = clamp(deadzone(leftRamping.rampPower(forwardsPower),.1)+turningPower, -1, 1);
-		double rightPower = clamp(deadzone(rightRamping.rampPower(forwardsPower),.1)-turningPower, -1, 1);
+		double leftPower = clamp(deadzone(forwardsPower,.1)+turningPower, -1, 1);
+		double rightPower = clamp(deadzone(forwardsPower,.1)-turningPower, -1, 1);
 				
-		robot.leftDrive.set(ControlMode.PercentOutput, leftPower);
-		robot.rightDrive.set(ControlMode.PercentOutput, rightPower);
+		robot.leftDrive.set(ControlMode.PercentOutput, leftPower*maxPower());
+		robot.rightDrive.set(ControlMode.PercentOutput, rightPower*maxPower());
+	}
+	
+	private double maxPower(){
+		if(robot.controller.getRawButton(4)){
+			return .3;
+		}
+		return .75;
 	}
 	
 	public double toExponential(double value, double exponent)
@@ -200,8 +220,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void intake() {
-		double power = 1;
-		double autoOutput = 0;
+		double power = .7;
 		double controllerOutput = 0;
 		
 		//controller output
@@ -213,23 +232,7 @@ public class Standard extends TeleopProgram{
 			controllerOutput -= power;
 		}
 		
-		//pneumatic state
-		if(robot.pneumaticsEnabled) {
-			if(robot.clamp.get() == DoubleSolenoid.Value.kReverse) {
-				//if(!compression detected): off
-				//autoOutput -= power;		
-			}
-			else {
-				autoOutput = 0;
-			}
-		}
-		
-		if(!(controllerOutput == 0)) {
-			robot.intake.set(ControlMode.PercentOutput, controllerOutput);
-		}
-		else {
-			robot.intake.set(ControlMode.PercentOutput, autoOutput);
-		}
+		robot.winch.set(ControlMode.PercentOutput, controllerOutput);
 	}
 	
 	private void autoCollect() {
@@ -246,13 +249,16 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-		robot.winch.set(ControlMode.PercentOutput, deadzone(robot.controller.getRawAxis(5), joystickError));
+		SmartDashboard.putNumber("Power", robot.mast.getMotorOutputPercent());
+		robot.mast.set(ControlMode.PercentOutput, -deadzone(robot.controller.getRawAxis(5), joystickError));
+		if(deadzone(robot.controller.getRawAxis(5),joystickError) == 0){
+			robot.mast.set(ControlMode.PercentOutput, .1);
+		}
 	}
 
 	@Override
 	public void teleopDisabledInit() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

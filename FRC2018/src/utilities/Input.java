@@ -103,27 +103,29 @@ public class Input {
 	
 	private void displayEncoderAuto() {
 		ArrayList<String> enc = new ArrayList<String>();
-		enc.add("true");
-		enc.add("false");
+		enc.add("AUTOMATIC");
+		enc.add("MANUAL");
 		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
 	}
 	
 	public AutoProgram getAuto() {
-		return getAuto(autoChoice.getInput());
-		/*for(int a = 0; a < auto.size(); ++a) {
-			SmartDashboard.putString("AutoKEY", getKey());
-			if(auto.get(a).getName().equals(getKey())) {
-				return auto.get(a);
+		if(getEncoder() == true){
+			for(int a = 0; a < auto.size(); ++a) {
+				SmartDashboard.putString("AutoKEY", getKey());
+				if(auto.get(a).getName().equals(getKey())) {
+					return auto.get(a);
+				}
 			}
-		}
-		
-		for(int a = 0; a < auto.size(); ++a) {
-			if(auto.get(a).getName() == "DEF") {
-				return auto.get(a);
+			
+			for(int a = 0; a < auto.size(); ++a) {
+				if(auto.get(a).getName() == "STRAIGHT!") {
+					return auto.get(a);
+				}
 			}
+			return null;
+		}else{
+			return getAuto(autoChoice.getInput());
 		}
-		return null;
-		*/
 	}
 	
 	//key generator for autonomous
@@ -222,7 +224,7 @@ public class Input {
 	}
 	
 	private TeleopProgram getTeleop(String te) {
-		for(int a = 0; a < driver.size(); ++a) {
+		for(int a = 0; a < teleop.size(); ++a) {
 			if(teleop.get(a).getName() == te) {
 				return teleop.get(a);
 			}
@@ -240,7 +242,7 @@ public class Input {
 	}
 	
 	private boolean getEncoder() {
-		if(encoderAuto.getInput() == "true") {
+		if(encoderAuto.getInput() == "AUTOMATIC") {
 			return true;
 		}
 		else {

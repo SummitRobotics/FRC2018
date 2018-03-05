@@ -89,7 +89,7 @@ public class Variables {
 			rightSensorPhase = false;
 			rightReversedI = true;
 			leftIntakeId = 34;
-			winchId = 38;
+			winchId = 37;
 			rightIntakeId = 38;
 			leftFollowerId = 32;
 			leftDriveId = 21;
@@ -100,6 +100,7 @@ public class Variables {
 			extenderIdA = 0;
 			extenderIdB = 1;
 			mastId = 23;
+			mastReversed = true;
 		}
 	}
 	

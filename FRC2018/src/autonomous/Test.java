@@ -12,7 +12,7 @@ public class Test extends AutoProgram{
 
 	@Override
 	public void autonomousInit() {
-		initCommands(2);
-		commands[0].addMastT(3, .7);
+		initCommands(1);
+		commands[0].addClamp();
 	}
 }

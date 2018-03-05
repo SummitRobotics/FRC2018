@@ -20,6 +20,7 @@ public class Delay extends Action{
 	@Override
 	public void run() {
 		if(!started) {
+			clock = new Timer();
 			clock.start();
 		}
 		started = true;
