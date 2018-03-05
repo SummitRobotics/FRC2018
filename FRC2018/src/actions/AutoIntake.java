@@ -1,64 +1,67 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import functions.PID;
 import templates.Action;
-import utilities.Vision;
 
 public class AutoIntake extends Action{
+	//PID system for vision
 	private PID visionPID = new PID(.02, 0, 0);
 	private PID lateralPID = new PID(.1, 0, 0);
-	private double maxOutput = .5;
-	private double maxError = 1;
-	private double targetSize = 15;
 	
+	//tuning
+	private double maxOutput = .5;
+	//maximum angle offset from cube - must be nonzero
+	private double maxError = 1;
+	//how large the cube should be present on the screen before stopping
+	private double targetSize = 15;
+	//to prevent signicicant jerkiness during auto
 	private double lastSteering = 0;
 	
+	//constructor
 	public AutoIntake(Hardware r) {
 		super(r);
 	}
-	
-	public AutoIntake(Hardware r, PID p) {
-		super(r);
-		visionPID = p;
-	}
 
 	@Override
-	public void run() {
+	public void actionInit() {
+		//setup PID subsystems of both lateral and yaw movement independently
+		visionPID.setMaxOutput(maxOutput);
+		visionPID.setTarget(0);
+		visionPID.setNoiseLevels(.01);
+		
+		lateralPID.setMaxOutput(maxOutput);
+		lateralPID.setTarget(targetSize);
+	}
+	
+	@Override
+	public void actionPeriodic() {
 		double steering = 0;
 		double lateral = 0;
 		
-		if(!started) {
-			visionPID.setMaxOutput(maxOutput);
-			visionPID.setTarget(0);
-			visionPID.setNoiseLevels(.01);
-			
-			lateralPID.setMaxOutput(maxOutput);
-			lateralPID.setTarget(targetSize);
-		}
-		
-		started = true;
-		
+		//if vision present
 		if(robot.lemonlightPresent) {
+			//and if the target is skewed and actually the cube
 			if(Math.abs(robot.lemonlight.getOffsetDegrees()) > maxError && robot.lemonlight.getArea() > 1) {
+				//then rotate the robot to the target
 				steering = visionPID.output(robot.lemonlight.getOffsetDegrees());
 				steering = smoothSteering(steering);
 			}
+			//and if the target is not close to the lemonlight
 			if(robot.lemonlight.getArea() < targetSize) {
+				//then move forward
 				lateral = lateralPID.output(robot.lemonlight.getArea());
 			}
 		}
 
+		//set power accordingly
 		robot.leftDrive.set(ControlMode.PercentOutput, lateral - steering);
 		robot.rightDrive.set(ControlMode.PercentOutput, lateral + steering);
-		
-		update();
 	}
 	
+	//given the lack of PID tuning time
+	//I smoothed out some of the jerky movements manually
 	private double smoothSteering(double x) {
 		int ecc = 2;
 		double newSteering = (x + (lastSteering*ecc)) / (1 + ecc);
@@ -67,21 +70,21 @@ public class AutoIntake extends Action{
 	}
 
 	@Override
-	public String getAction() {
-		return "Seeking action";
-	}
-
-	@Override
-	public void update() {
+	public boolean actionFinished() {
+		//if the lemonlight is disconnected, no targets are found, or the target size is aligned and close
 		if(!robot.lemonlightPresent || (robot.lemonlight.getTargetPresent() == 1 && robot.lemonlight.getArea() >= targetSize)) {
-			finished = true;
+			//then finish action
 			robot.leftDrive.set(ControlMode.PercentOutput, 0);
 			robot.rightDrive.set(ControlMode.PercentOutput, 0);
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	
-	public PID getPID() {
-		return visionPID;
+	@Override
+		public String getAction() {
+			return "Seeking action";
 	}
-
 }

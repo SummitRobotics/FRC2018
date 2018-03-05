@@ -9,13 +9,19 @@ import templates.Action;
 
 public class ForwardTGyro extends Action {
 	
+	//turning mechanics
 	private double angle;
 	private double angleSensitivity = .1;	
 	
+	//for power guessing mechanics
+	//what programmer could guess forward by power wrong?
 	private double time;
 	private double lateralPower;
+	
+	//the timer
 	private Timer clock;
 	
+	//constructor
 	public ForwardTGyro(Hardware r, double t, double p) {
 		super(r);
 		time = t;
@@ -24,19 +30,23 @@ public class ForwardTGyro extends Action {
 	}
 
 	@Override
-	public void run() {
-		if(!started) {
-			clock = new Timer();
-			clock.start();
-		}
-		started = true;
+	public void actionInit() {
+		//start timer
+		clock = new Timer();
+		clock.start();
+	}
+
+	@Override
+	public void actionPeriodic() {
+		//if the drive and gyro are both connected
 		if(robot.driveEnabled && robot.gyroEnabled) {
+			//then set power compensating for initial angle variation
 			robot.leftDrive.set(ControlMode.PercentOutput, capPower(lateralPower + getCorrection()));
 			robot.rightDrive.set(ControlMode.PercentOutput, capPower(lateralPower - getCorrection()));
 		}
-		update();
 	}
 	
+	//get the difference from the first angle
 	private double getCorrection() {
 		double diff = angle - robot.getAbsoluteYaw();
 		if(diff > 0) {
@@ -47,6 +57,7 @@ public class ForwardTGyro extends Action {
 		}
 	}
 	
+	//prevent power from being greater than <-1,1>
 	private double capPower(double x) {
 		if(x < -1) {
 			return -1;
@@ -60,24 +71,29 @@ public class ForwardTGyro extends Action {
 	}
 
 	@Override
-	public String getAction() {
-		return "Forward by Time and Gyro";
-	}
-
-	@Override
-	public void update() {
-		if(clock.get() > time || !robot.driveEnabled) {
-			finished = true;
+	public boolean actionFinished() {
+		//if the timer is finished or either component is disabled
+		if(clock.get() > time || !robot.driveEnabled || !robot.gyroEnabled)  {
+			//then stop the timer and drive
 			clock.stop();
 			disablePower();
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	
+	//turn off the drive train
 	private void disablePower() {
 		if(robot.driveEnabled) {
 			robot.leftDrive.set(ControlMode.PercentOutput, 0);
 			robot.rightDrive.set(ControlMode.PercentOutput, 0);
 		}
 	}
-
+	
+	@Override
+	public String getAction() {
+		return "Forward by Time and Gyro";
+	}
 }

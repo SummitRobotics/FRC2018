@@ -8,34 +8,34 @@ import templates.Action;
 
 public class Piston extends Action{
 	private DoubleSolenoid piston;
+	
 	public Piston(Hardware r, DoubleSolenoid x) {
 		super(r);
 		piston = x;
 	}
 
 	@Override
-	public void run() {
-		started = true;
-		if(robot.pneumaticsEnabled) {
-			if(piston.get() == DoubleSolenoid.Value.kReverse) {
-				piston.set(DoubleSolenoid.Value.kForward);
-			}
-			else {
-				piston.set(DoubleSolenoid.Value.kReverse);
-			}
-		}
-		update();
-	}
-	
-	public DoubleSolenoid.Value getPosition(){
-		return piston.get();
+	public void actionInit() {
+		//nothing to init
 	}
 
 	@Override
-	public void update() {
-		finished = true;
+	public void actionPeriodic() {
+		if(robot.pneumaticsEnabled) {
+			if(piston.get() == DoubleSolenoid.Value.kForward) {
+				piston.set(DoubleSolenoid.Value.kReverse);
+			}
+			else {
+				piston.set(DoubleSolenoid.Value.kForward);
+			}
+		}
 	}
 
+	@Override
+	public boolean actionFinished() {
+		return true;
+	}
+	
 	@Override
 	public String getAction() {
 		return "Clamp action";
