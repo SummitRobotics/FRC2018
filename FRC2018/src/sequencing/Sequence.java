@@ -14,15 +14,6 @@ public class Sequence {
 	private ArrayList<Action> runningList;
 	private ArrayList<Flag> flags;
 	
-	//constructor
-	public Sequence(Hardware r) {
-		robot = r;
-		branches = new ArrayList<Subsequence>();
-		//add default flag for starting subsequnces
-		flags = new ArrayList<Flag>();
-		flags.add(new Flag(0, true));
-	}
-	
 	//**************//
 	//
 	//	addAction() methods
@@ -110,24 +101,30 @@ public class Sequence {
 		return (int) Math.round(((distance) / (Math.PI*(robot.variables.getWheelDiam())) * 4096));
 	}
 
+	//constructor
+	public Sequence(Hardware r) {
+		robot = r;
+		branches = new ArrayList<Subsequence>();
+		//add default flag for starting subsequnces
+		flags = new ArrayList<Flag>();
+		flags.add(new Flag(0, true));
+	}
+
 	//compile added runningList into a new subsequence
 	public void addSequence(int prefix, int suffix) {
-		//compile the aforementioned runningList with ending and closing flags
-		int[] prefixes = {prefix};
+		int[] prefixes = {prefix, 0};
 		branches.add(new Subsequence(runningList, prefixes, suffix));
-		//clear the list of runningList
+		flags.add(new Flag(suffix, false));
 		runningList = new ArrayList<Action>();
 	}
 	
 	//compile added runninglist into a subsequence requiring two flags
 	public void addSequence(int prefixA, int prefixB, int suffix) {
 		int[] prefix = {prefixA, prefixB};
-		//compile the aforementioned runningList with ending and closing flags
 		branches.add(new Subsequence(runningList, prefix, suffix));
-		//clear the list of runningList
+		flags.add(new Flag(suffix, false));
 		runningList = new ArrayList<Action>();
 	}
-	
 	
 	//**************//
 	//
@@ -135,18 +132,12 @@ public class Sequence {
 	//	This runs in the background
 	//
 	//**************//
-	public void run() {
-		//run through each subsequence
+	public void run() throws InterruptedException{
 		for(int a = 0; a < branches.size(); ++a) {
-			if(!branches.get(a).isFinished()) {
-				//update each subsequence with current flags
-				branches.get(a).updateFlags(flags);
-				//if flags are adequate, sequence will run (interal regulation)
+			if(!branches.get(a).isFinished() && subsequenceEnabled(branches.get(a))){
 				branches.get(a).run();
 			}
-			else {
-				addFlag(branches.get(a).appendingFlag());
-			}
+			updateFlags();
 		}
 	}
 	
@@ -160,17 +151,29 @@ public class Sequence {
 		return true;
 	}
 	
-	//prevent flags from repeating in sequence
-	private void addFlag(Flag suffix) {
-		//if the index of the flag is detected
-		for(int a = 0; a < flags.size(); ++a) {
-			//then add nothing
-			if(flags.get(a).getFlag() == suffix.getFlag()) {
-				return;
+	//find whether the required flags have been thrown
+	private boolean subsequenceEnabled(Subsequence s) {
+		for(int a = 0; a < s.requiredFlags().length; ++a) {
+			for(int b = 0; b < flags.size(); ++b) {
+				if(!(flags.get(b).getIndex() == s.requiredFlags()[a])) {
+					return false;
+				}
 			}
 		}
-		//otherwise add new flag
-		flags.add(suffix);
+		return true;
+	}
+	
+	//cycle the status of the flags
+	private void updateFlags() {
+		for(int a = 0; a < branches.size(); ++a) {
+			if(branches.get(a).isFinished()) {
+				for(int b = 0; b < flags.size(); ++b) {
+					if(branches.get(a).appendingFlag() == flags.get(b).getIndex()) {
+						flags.get(b).throwFlag();
+					}
+				}
+			}
+		}
 	}
 
 }

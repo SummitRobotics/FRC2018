@@ -28,7 +28,11 @@ public abstract class AutoProgram {
 	
 	public final void autonomousPeriodic() {
 		if(!commands.isFinished()) {
-			commands.run();
+			try {
+				commands.run();
+			} catch (InterruptedException e) {
+				autonomousDisabledInit();
+			}
 		}
 	}
 	
