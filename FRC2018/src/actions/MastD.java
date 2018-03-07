@@ -11,6 +11,9 @@ public class MastD extends Action {
 	private double maxPower = 1;
 	private double minPower = .1;
 	
+	private int upperCounter;
+	private int lowerCounter;
+	
 	private HallEncoder encoder;
 	
 	//constructor
@@ -22,6 +25,8 @@ public class MastD extends Action {
 	@Override
 	public void actionInit() {
 		encoder = new HallEncoder(robot.hall);
+		upperCounter = robot.higherMastInteraction.get();
+		lowerCounter = robot.lowerMastInteraction.get();
 	}
 
 	@Override
@@ -33,8 +38,9 @@ public class MastD extends Action {
 
 	@Override
 	public boolean actionFinished() {
+		
 		//if the target has been reached or some technical problems discovered
-		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < offset || !robot.mastEnabled) {
+		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < offset || !robot.mastEnabled || checkLimits()) {
 			//then finish action
 			return true;
 		}
@@ -46,6 +52,15 @@ public class MastD extends Action {
 	@Override
 	public String getAction() {
 		return "Distance";
+	}
+	
+	private boolean checkLimits() {
+		if(robot.higherMastInteraction.get() != upperCounter || robot.lowerMastInteraction.get() != lowerCounter || robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
+			System.out.println("ERROR: Limit switch reached");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

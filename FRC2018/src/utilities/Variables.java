@@ -195,4 +195,5 @@ public class Variables {
 	public boolean getWinchPolarity() {
 		return winchReversed;
 	}
+	
 }

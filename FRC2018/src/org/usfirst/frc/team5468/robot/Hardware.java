@@ -51,8 +51,8 @@ public class Hardware {
 	
 	//limit switches
 	private DigitalInput intakeSwitch;
-	private DigitalInput lowerMastSwitch;
-	private DigitalInput higherMastSwitch;
+	public DigitalInput lowerMastSwitch;
+	public DigitalInput higherMastSwitch;
 	
 	//limit switch counter, for better detection of events
 	public Counter intakeInteraction;

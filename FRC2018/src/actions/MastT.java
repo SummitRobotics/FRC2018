@@ -14,6 +14,9 @@ public class MastT extends Action {
 	//default power
 	private double power = .5;
 	
+	private int upperCounter;
+	private int lowerCounter;
+	
 	//constructor
 	public MastT(Hardware r, double t) {
 		super(r);
@@ -32,6 +35,10 @@ public class MastT extends Action {
 		//start timer
 		clock = new Timer();
 		clock.start();
+		
+		//Init limit counters
+		upperCounter = robot.higherMastInteraction.get();
+		lowerCounter = robot.lowerMastInteraction.get();
 	}
 
 	@Override
@@ -51,8 +58,8 @@ public class MastT extends Action {
 
 	@Override
 	public boolean actionFinished() {
-		//if the timer has elapsed or the mast disabled
-		if(clock.get() > time || !robot.mastEnabled) {
+		//if the timer has elapsed or the mast disabled or a limit switch is hit
+		if(clock.get() > time || !robot.mastEnabled || checkLimits()) {
 			//then finish the action
 			//set the mast to remain in position
 			robot.mast.set(ControlMode.PercentOutput, 0.1);
@@ -67,5 +74,14 @@ public class MastT extends Action {
 	@Override
 		public String getAction() {
 			return "Time-based Mast";
+	}
+	
+	private boolean checkLimits() {
+		if(robot.higherMastInteraction.get() != upperCounter || robot.lowerMastInteraction.get() != lowerCounter || robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
+			System.out.println("ERROR: Limit switch reached");
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
