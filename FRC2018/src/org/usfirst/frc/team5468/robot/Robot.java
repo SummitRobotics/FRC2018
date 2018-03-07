@@ -56,6 +56,7 @@ public class Robot extends IterativeRobot {
 		lemonlight.run();
 		output.update();
 		teleop.teleopPeriodic();
+		
 	}
 	
 	

@@ -78,8 +78,16 @@ public class MastT extends Action {
 	
 	private boolean checkLimits() {
 		if(robot.higherMastInteraction.get() != upperCounter || robot.lowerMastInteraction.get() != lowerCounter || robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
-			System.out.println("ERROR: Limit switch reached");
-			return true;
+			if(robot.higherMastSwitch.get() && robot.mast.getMotorOutputPercent() <= 0) {
+				return false;
+			} else {
+				if(robot.lowerMastSwitch.get() && robot.mast.getMotorOutputPercent() >= 0) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+			
 		} else {
 			return false;
 		}
