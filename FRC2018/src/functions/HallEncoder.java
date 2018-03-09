@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Counter;
 
 public class HallEncoder {
 	private Counter hall;
-	private static final double DISTANCE_PER_PULSE = 1;
+	private double distancePerPulse = 1;
 	
 	public HallEncoder(Counter h) {
 		hall = h;
@@ -13,7 +13,7 @@ public class HallEncoder {
 	
 	private void initEncoder() {
 		hall.reset();
-		hall.setDistancePerPulse(DISTANCE_PER_PULSE);
+		hall.setDistancePerPulse(distancePerPulse);
 	}
 	
 	public double getPosition() {
@@ -31,6 +31,10 @@ public class HallEncoder {
 	
 	public boolean stopped() {
 		return hall.getStopped();
+	}
+	
+	public void setDistancePerPulse(double distance) {
+		distancePerPulse = distance;
 	}
 
 }

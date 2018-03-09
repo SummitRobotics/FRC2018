@@ -1,20 +1,21 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
+
+import edu.wpi.first.wpilibj.Counter;
 import functions.HallEncoder;
 import templates.Action;
 
 public class MastD extends Action {
 	//distances
 	private double target;
-	private double offset;
-	private double maxPower = 1;
-	private double minPower = .1;
+	private double offset = 10;
+	double power = .5;
 	
 	private int upperCounter;
 	private int lowerCounter;
 	
-	private HallEncoder encoder;
+	Counter mastEncoder;
 	
 	//constructor
 	public MastD(Hardware r, double distance) {
@@ -27,12 +28,28 @@ public class MastD extends Action {
 		encoder = new HallEncoder(robot.hall);
 		upperCounter = robot.higherMastInteraction.get();
 		lowerCounter = robot.lowerMastInteraction.get();
+		
+		mastEncoder = robot.hall;
+		mastEncoder.reset();
+		mastEncoder.setDistancePerPulse(robot.variables.getDistancePerPulse());
+		
+		if(target < 0) {
+			power = -power;
+		}
+		
+		
+	}
+	
+	private double smoothPower(double point) {
+		int n = 2;
+		return ((point*n) + power)/(1+n);
 	}
 
 	@Override
 	public void actionPeriodic() {
 		if(robot.mastEnabled) {
-			
+			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
+			updateDistance();
 		}
 	}
 
@@ -40,7 +57,9 @@ public class MastD extends Action {
 	public boolean actionFinished() {
 		
 		//if the target has been reached or some technical problems discovered
-		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < offset || !robot.mastEnabled || checkLimits()) {
+		if(Math.abs(target - mastEncoder.getDistance()) < offset || !robot.mastEnabled || checkLimits()) {
+			//Log our change
+			robot.addMastDistance(mastEncoder.getDistance());
 			//then finish action
 			return true;
 		}
@@ -52,6 +71,13 @@ public class MastD extends Action {
 	@Override
 	public String getAction() {
 		return "Distance";
+	}
+	
+	private void updateDistance() {
+		if(robot.lowerMastInteraction.get() != lowerCounter || robot.lowerMastSwitch.get()) {
+			lowerCounter = robot.lowerMastInteraction.get();
+			robot.setMastDistance(0);
+		}
 	}
 	
 	private boolean checkLimits() {

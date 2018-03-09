@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import functions.HallEncoder;
 import utilities.Variables;
 import utilities.Vision;
 
@@ -48,6 +49,9 @@ public class Hardware {
 	
 	//hall effect encoder for the mast
 	public Counter hall;
+	
+	//Distance Tracking for Mast
+	public double mastDistance;
 	
 	//limit switches
 	private DigitalInput intakeSwitch;
@@ -430,13 +434,15 @@ public class Hardware {
 	//**************//
 	//
 	//	Setup and configure mast
-	//  TO DO: Implement Hall Effect encoder
+	//  TODO: Implement Hall Effect encoder
 	//
 	//**************//
 	private void initMast() {
 		try {
 			mast = new TalonSRX(variables.getMastId());
 			winch = new VictorSPX(variables.getWinchId());
+			hall = new Counter(variables.getMastSensorId());
+			mastDistance = 0;
 			configMast();
 			mastEnabled = true;
 		}catch(Exception e) {
@@ -458,5 +464,17 @@ public class Hardware {
 		mast.setInverted(variables.getMastPolarity());
 		winch.setInverted(variables.getWinchPolarity());
 		mast.setSensorPhase(variables.getMastPhase());
+	}
+	
+	public double getMastDistance() {
+		return mastDistance;
+	}
+	
+	public void addMastDistance(double distanceChange) {
+		mastDistance = mastDistance + distanceChange;
+	}
+	
+	public void setMastDistance(double distance) {
+		mastDistance = distance;
 	}
 }

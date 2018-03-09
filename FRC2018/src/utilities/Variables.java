@@ -51,6 +51,9 @@ public class Variables {
 	private int mastId;
 	private boolean mastReversed = false;
 	private boolean mastPhase = false;
+	private int mastHallSensorId = 3;
+	//TODO Set this
+	private double distancePerPulse = 5;
 	
 	//ramp
 	private int winchId;
@@ -194,6 +197,14 @@ public class Variables {
 	
 	public boolean getWinchPolarity() {
 		return winchReversed;
+	}
+	
+	public int getMastSensorId() {
+		return mastHallSensorId;
+	}
+	
+	public double getDistancePerPulse() {
+		return distancePerPulse;
 	}
 	
 }
