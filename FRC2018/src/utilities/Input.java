@@ -53,6 +53,7 @@ public class Input {
 		auto.add(new LeftLeftScale(robot));
 		auto.add(new CenterLeftSwitch(robot));
 		auto.add(new CenterRightSwitch(robot));
+		auto.add(new LeftLeftScaleLeftSwitch(robot));
 		
 		//filthy power based auto methods
 		auto.add(new RightRightSwitchPower(robot));

@@ -1,6 +1,9 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import functions.HallEncoder;
 import templates.Action;
 
@@ -22,25 +25,19 @@ public class MastD extends Action {
 	@Override
 	public void actionInit() {
 		encoder = new HallEncoder(robot.hall);
+		encoder.setError(500);
 	}
 
 	@Override
 	public void actionPeriodic() {
 		if(robot.mastEnabled) {
-			
+			robot.mast.set(ControlMode.PercentOutput, encoder.getPower(target));
 		}
 	}
 
 	@Override
 	public boolean actionFinished() {
-		//if the target has been reached or some technical problems discovered
-		if(Math.abs(target - robot.mast.getSelectedSensorPosition(0)) < offset || !robot.mastEnabled) {
-			//then finish action
-			return true;
-		}
-		else {
-			return false;
-		}
+		if(encoder.)
 	}
 	
 	@Override

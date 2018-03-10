@@ -21,7 +21,7 @@ public abstract class AutoProgram {
 	}
 	
 	private final void setupComponents() {
-		//Initialize necessary components like pneumatics
+		commands = new Sequence(robot);
 	}
 	
 	public abstract void addActions();

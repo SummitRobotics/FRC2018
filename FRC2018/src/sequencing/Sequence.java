@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.usfirst.frc.team5468.robot.Hardware;
 import actions.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import templates.Action;
 
 public class Sequence {
@@ -105,6 +106,7 @@ public class Sequence {
 	public Sequence(Hardware r) {
 		robot = r;
 		branches = new ArrayList<Subsequence>();
+		runningList = new ArrayList<Action>();
 		//add default flag for starting subsequnces
 		flags = new ArrayList<Flag>();
 		flags.add(new Flag(0, true));
@@ -143,6 +145,9 @@ public class Sequence {
 	
 	//find whether all subsequences have completed
 	public boolean isFinished() {
+		if(branches.size() == 0) {
+			return true;
+		}
 		for(int a = 0; a < branches.size(); ++a) {
 			if(!branches.get(a).isFinished()) {
 				return false;
@@ -155,11 +160,14 @@ public class Sequence {
 	private boolean subsequenceEnabled(Subsequence s) {
 		for(int a = 0; a < s.requiredFlags().length; ++a) {
 			for(int b = 0; b < flags.size(); ++b) {
-				if(!(flags.get(b).getIndex() == s.requiredFlags()[a])) {
-					return false;
+				if(flags.get(b).getIndex() == s.requiredFlags()[a] && !flags.get(b).isThrown()) {
+						SmartDashboard.putNumber("Index:", flags.get(b).getIndex());
+						SmartDashboard.putBoolean("Enabled:", false);
+						return false;
 				}
 			}
 		}
+		SmartDashboard.putBoolean("Enabled:", true);
 		return true;
 	}
 	

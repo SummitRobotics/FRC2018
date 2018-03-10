@@ -12,7 +12,10 @@ public class Test extends AutoProgram{
 	
 	@Override
 	public void addActions() {
-		commands.addClamp();
-		commands.addSequence(0, 1);
+		for(int a = 0; a < 4; ++a) {
+			commands.addRotationGyro(90);
+			commands.addForwardD(24);
+		}
+		commands.addSequence(0, 2);
 	}
 }

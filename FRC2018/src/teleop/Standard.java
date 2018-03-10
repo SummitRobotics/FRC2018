@@ -62,6 +62,8 @@ public class Standard extends TeleopProgram{
 				//autoCollect();
 			}
 		}
+		SmartDashboard.putNumber("LEFT ENCODER", robot.leftDrive.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("RIGHT ENCODER", robot.rightDrive.getSelectedSensorPosition(0));
 	}
 	
 	//**************//
@@ -93,11 +95,6 @@ public class Standard extends TeleopProgram{
 		}
 	}
 	
-	//**************//
-	//
-	//	Clamp Toggle : X		
-	//
-	//**************//
 	private void release() {
 		if(robot.controller.getRawButton(2)) {
 			robot.extender.set(DoubleSolenoid.Value.kReverse);
@@ -105,20 +102,9 @@ public class Standard extends TeleopProgram{
 		}
 	}
 		
-	//**************//
-	//
-	//	Extender Toggle : A	
-	//
-	//**************//
 	private void actuateExtender() {
 		if(detectChangeExtender()) {
 			extend.run();
-			/*
-			 * if(extend == out){
-			 * intake.set(-)
-			 * else{
-			 * intake.set(0)
-			 */
 		}
 	}
 	

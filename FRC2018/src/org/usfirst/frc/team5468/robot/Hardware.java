@@ -81,7 +81,7 @@ public class Hardware {
 	//**************//
 	public Hardware() {
 		//A = polybot, B = Our actual robot
-		variables = new Variables("B");
+		variables = new Variables("A");
 		initGyro();
 		initCounter();
 		initGamepad();
@@ -350,11 +350,12 @@ public class Hardware {
 		rightDrive.config_kD(0, Variables.d, Variables.delay);
 		
 		/* set acceleration and vcruise velocity - see documentation */
-		leftDrive.configMotionCruiseVelocity(1000, Variables.delay);
-		leftDrive.configMotionAcceleration(500, Variables.delay);
+		leftDrive.configMotionCruiseVelocity(2000, Variables.delay);
+		leftDrive.configMotionAcceleration(750, Variables.delay);
 		
-		rightDrive.configMotionCruiseVelocity(1000, Variables.delay);
-		rightDrive.configMotionAcceleration(500, Variables.delay);
+		rightDrive.configMotionCruiseVelocity(2000, Variables.delay);
+		rightDrive.configMotionAcceleration(750
+				, Variables.delay);
 		
 		/* zero the sensor */
 		leftDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
