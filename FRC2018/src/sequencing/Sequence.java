@@ -90,11 +90,20 @@ public class Sequence {
 	}
 	
 	public void addEject() {
-		runningList.add(new Compliant(robot, 2, 1));
+		addExtend();
+		addDelay(.1);
+		addClamp();
+		addDelay(.25);
+		addExtend();
+	}
+	
+	public void retract() {
+		addExtend();
 	}
 	
 	public void addAutoCube() {
 		runningList.add(new AutoIntake(robot));
+		addClamp();
 	}
 	
 	//inches to encoder

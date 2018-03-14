@@ -47,17 +47,12 @@ public class Hardware {
 	private double relativeAngle;
 	
 	//hall effect encoder for the mast
-	public Counter hall;
+	public Counter mastEncoder;
 	
 	//limit switches
-	private DigitalInput intakeSwitch;
-	private DigitalInput lowerMastSwitch;
-	private DigitalInput higherMastSwitch;
-	
-	//limit switch counter, for better detection of events
-	public Counter intakeInteraction;
-	public Counter lowerMastInteraction;
-	public Counter higherMastInteraction;
+	public DigitalInput intakeSwitch;
+	public DigitalInput lowerMastSwitch;
+	public DigitalInput higherMastSwitch;
 	
 	//the limelight camera
 	public Vision lemonlight;
@@ -81,7 +76,7 @@ public class Hardware {
 	//**************//
 	public Hardware() {
 		//A = polybot, B = Our actual robot
-		variables = new Variables("A");
+		variables = new Variables("B");
 		initGyro();
 		initCounter();
 		initGamepad();
@@ -175,8 +170,9 @@ public class Hardware {
 	//adjust distance per pulse
 	private void initCounter() {
 		try {
-			hall = new Counter(variables.getHallId());
-			hall.setDistancePerPulse(1);
+			mastEncoder = new Counter(variables.getMastSensorId());
+			mastEncoder.setDistancePerPulse(variables.getDistancePerPulse());
+			mastEncoder.reset();
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
@@ -185,7 +181,7 @@ public class Hardware {
 	
 	private void refreshCounter() {
 		try {
-			hall.get();
+			mastEncoder.get();
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
@@ -194,12 +190,9 @@ public class Hardware {
 	
 	private void initLimitSwitch() {
 		try {
-			intakeSwitch = new DigitalInput(variables.getIntakeSwitchId());
+			//intakeSwitch = new DigitalInput(variables.getIntakeSwitchId());
 			lowerMastSwitch = new DigitalInput(variables.getLowerSwitchId());
 			higherMastSwitch = new DigitalInput(variables.getHigherSwitchId());
-			intakeInteraction = new Counter(intakeSwitch);
-			lowerMastInteraction = new Counter(lowerMastSwitch);
-			higherMastInteraction = new Counter(higherMastSwitch);
 			limitSwitchPresent = true;
 		}catch(Exception e) {
 			limitSwitchPresent = false;
@@ -208,9 +201,8 @@ public class Hardware {
 	
 	private void refreshLimit() {
 		try {
-			intakeInteraction.get();
-			lowerMastInteraction.get();
-			higherMastInteraction.get();
+			lowerMastSwitch.get();
+			higherMastSwitch.get();
 			limitSwitchPresent = true;
 		}catch(Exception e) {
 			limitSwitchPresent = false;
@@ -431,7 +423,7 @@ public class Hardware {
 	//**************//
 	//
 	//	Setup and configure mast
-	//  TO DO: Implement Hall Effect encoder
+	//  TODO: Implement Hall Effect encoder
 	//
 	//**************//
 	private void initMast() {

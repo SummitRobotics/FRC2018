@@ -1,7 +1,5 @@
 package utilities;
 
-import templates.Driver;
-
 public class Variables {
 	//constants relevant for encoders
 	public static final int delay = 0;
@@ -20,6 +18,7 @@ public class Variables {
 	//necessary for correct distance calculation
 	private double wheelDiam;
 	private double driveTrainWidth;
+	private double minRotatePower;
 	
 	//reversing polarity of power output
 	private boolean leftReversed = false;
@@ -47,16 +46,22 @@ public class Variables {
 	private boolean leftReversedI = false;
 	private boolean rightReversedI = false;
 	
-	//mast 
+	//mast motor
 	private int mastId;
 	private boolean mastReversed = false;
 	private boolean mastPhase = false;
+	private double minStallingPower = .15;
 	
 	//ramp
 	private int winchId;
 	private boolean winchReversed = false;
 	
-	private int hallId;
+	//hall effect sensor
+	private int mastHallEffectSensorId;
+	private int mastDistancePerPulse;
+	private int[] mastEncoderRange = {1, 10000};
+	
+	//switches
 	private int intakeSwitchId;
 	private int lowerMastId;
 	private int higherMastId;
@@ -70,6 +75,7 @@ public class Variables {
 		if(robotName == "A") {
 			wheelDiam = 6;
 			driveTrainWidth = 28;
+			minRotatePower = .2;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -82,6 +88,7 @@ public class Variables {
 		else if(robotName == "B") {
 			wheelDiam = 8;
 			driveTrainWidth = 33;
+			minRotatePower = .3;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -94,12 +101,16 @@ public class Variables {
 			leftDriveId = 21;
 			rightFollowerId = 36;
 			rightDriveId = 25;
-			clampIdA = 2;
-			clampIdB = 3;
-			extenderIdA = 0;
-			extenderIdB = 1;
+			clampIdA = 0;
+			clampIdB = 1;
+			extenderIdA = 2;
+			extenderIdB = 3;
 			mastId = 23;
 			mastReversed = true;
+			mastHallEffectSensorId = 0;
+			mastDistancePerPulse = 5;
+			higherMastId = 2;
+			lowerMastId = 1;
 		}
 	}
 	
@@ -172,10 +183,6 @@ public class Variables {
 		return driveTrainWidth;
 	}
 	
-	public int getHallId() {
-		return hallId;
-	}
-	
 	public int getIntakeSwitchId() {
 		return intakeSwitchId;
 	}
@@ -195,4 +202,25 @@ public class Variables {
 	public boolean getWinchPolarity() {
 		return winchReversed;
 	}
+	
+	public int getMastSensorId() {
+		return mastHallEffectSensorId;
+	}
+	
+	public double getDistancePerPulse() {
+		return mastDistancePerPulse;
+	}
+	
+	public double getMinimumMastPower() {
+		return minStallingPower;
+	}
+	
+	public int[] getMastRange() {
+		return mastEncoderRange;
+	}
+	
+	public double getMinRotatePower() {
+		return minRotatePower;
+	}
+	
 }

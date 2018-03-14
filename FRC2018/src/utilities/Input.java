@@ -24,19 +24,20 @@ public class Input {
 	//optional user input
 	private UserInterface teleopChoice;
 	private UserInterface autoChoice;
-	private UserInterface encoderAuto;
+	
 	
 	//required autonomous information
 	private UserInterface position;
 	private UserInterface target;
-
+	private UserInterface multiCubeEnabled;
+	private UserInterface automaticEnabled;
+	
 	public Input(Hardware r) {
 		robot = r;
 		addExistingClasses();
 		displayAutoInformation();
 		displayAutoPrereq();
 		displayTeleopInformation();
-		displayEncoderAuto();
 	}
 	
 	private void addExistingClasses() {
@@ -53,15 +54,24 @@ public class Input {
 		auto.add(new LeftLeftScale(robot));
 		auto.add(new CenterLeftSwitch(robot));
 		auto.add(new CenterRightSwitch(robot));
+		
+		//divine multi cube methods of ascension
 		auto.add(new LeftLeftScaleLeftSwitch(robot));
+		auto.add(new LeftLeftScaleRightSwitch(robot));
+		auto.add(new LeftRightScaleRightSwitch(robot));
+		auto.add(new LeftRightScaleLeftSwitch(robot));
+		auto.add(new RightRightScaleRightSwitch(robot));
+		auto.add(new RightLeftScaleLeftSwitch(robot));
+		auto.add(new RightLeftScaleRightSwitch(robot));
+		auto.add(new RightRightScaleLeftSwitch(robot));
 		
 		//filthy power based auto methods
-		auto.add(new RightRightSwitchPower(robot));
-		auto.add(new RightLeftSwitchPower(robot));
-		auto.add(new LeftRightSwitchPower(robot));
-		auto.add(new LeftLeftSwitchPower(robot));
-		auto.add(new CenterLeftSwitchPower(robot));
-		auto.add(new CenterRightSwitchPower(robot));
+		//auto.add(new RightRightSwitchPower(robot));
+		//auto.add(new RightLeftSwitchPower(robot));
+		//auto.add(new LeftRightSwitchPower(robot));
+		//auto.add(new LeftLeftSwitchPower(robot));
+		//auto.add(new CenterLeftSwitchPower(robot));
+		//auto.add(new CenterRightSwitchPower(robot));
 		
 		//teleop methods
 		teleop.add(new Standard(robot));
@@ -77,7 +87,7 @@ public class Input {
 	//
 	//**************//
 	private void displayAutoInformation() {
-		autoChoice = new UserInterface(convertAuto(auto), "Autonomous");
+		autoChoice = new UserInterface(convertAuto(auto), "AUTONOMOUS");
 	}
 	
 	private void displayAutoPrereq() {
@@ -91,19 +101,21 @@ public class Input {
 		tar.add("SCALE");
 		tar.add("LINE");
 		
-		position = new UserInterface(pos, "Position");
-		target = new UserInterface(tar, "Target");
-	}
-	
-	private void displayEncoderAuto() {
+		ArrayList<String> mc = new ArrayList<String>();
+		mc.add("MULTI CUBE DISABLED");
+		mc.add("MULTI CUBE ENABLED");
+		
 		ArrayList<String> enc = new ArrayList<String>();
 		enc.add("AUTOMATIC");
 		enc.add("MANUAL");
-		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
+		position = new UserInterface(pos, "POSITION");
+		target = new UserInterface(tar, "TARGET");
+		multiCubeEnabled = new UserInterface(mc, "MULTI CUBE STATUS:");
+		automaticEnabled = new UserInterface(convertEnc(enc), "AUTO DETERMINATION:");
 	}
 	
 	public AutoProgram getAuto() {
-		if(getEncoder() == true){
+		if(getAutomatic() == true){
 			for(int a = 0; a < auto.size(); ++a) {
 				SmartDashboard.putString("AutoKEY", getKey());
 				if(auto.get(a).getName().equals(getKey())) {
@@ -124,7 +136,7 @@ public class Input {
 	
 	//key generator for autonomous
 	private String getKey() {
-		char[] key = {' ',' ',' ',' '};
+		char[] key = {' ',' ',' '};
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
 		if(gameData.length() > 0){
 			//target
@@ -138,9 +150,6 @@ public class Input {
 			}
 			//starting position
 			key[2] = getPosition();
-			if(!getEncoder()) {
-				key[3] = 'P';
-			}
 		}
 		else {
 			return "DEF";
@@ -155,7 +164,7 @@ public class Input {
 	//
 	//**************//
 	private void displayTeleopInformation() {
-		teleopChoice = new UserInterface(convertTeleop(teleop), "Teleop");
+		teleopChoice = new UserInterface(convertTeleop(teleop), "TELEOP");
 	}
 	
 	public TeleopProgram getTeleop() {
@@ -210,8 +219,17 @@ public class Input {
 		return null;
 	}
 	
-	private boolean getEncoder() {
-		if(encoderAuto.getInput() == "AUTOMATIC") {
+	private boolean getAutomatic() {
+		if(automaticEnabled.getInput() == "AUTOMATIC") {
+			return false;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private boolean getMultiCube() {
+		if(multiCubeEnabled.getInput() == "MULTI CUBE ENABLED") {
 			return true;
 		}
 		else {

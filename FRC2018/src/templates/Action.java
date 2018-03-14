@@ -5,7 +5,7 @@ import org.usfirst.frc.team5468.robot.Hardware;
 public abstract class Action{
 	protected Hardware robot;
 	//has this specific action been concluded?
-	private boolean finished = false;
+	protected boolean finished = false;
 	//has this specific action been called before?
 	private boolean started = false;
 	

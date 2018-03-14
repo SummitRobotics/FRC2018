@@ -17,6 +17,11 @@ public class Subsequence {
 		suffix = s;
 	}
 	
+	//constructor for teleop
+	public Subsequence(ArrayList<Action> a) {
+		actions = a;
+	}
+	
 	//iterate through subsequence
 	public void run() {
 		if(!isFinished()) {

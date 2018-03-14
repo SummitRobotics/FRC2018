@@ -22,6 +22,7 @@ public abstract class AutoProgram {
 	
 	private final void setupComponents() {
 		commands = new Sequence(robot);
+		//commands.addClamp();
 	}
 	
 	public abstract void addActions();

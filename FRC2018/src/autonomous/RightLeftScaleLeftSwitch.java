@@ -3,16 +3,19 @@ package autonomous;
 import org.usfirst.frc.team5468.robot.Hardware;
 import templates.AutoProgram;
 
-public class LeftLeftScaleLeftSwitch extends AutoProgram{
+public class RightLeftScaleLeftSwitch extends AutoProgram{
 
-	public LeftLeftScaleLeftSwitch(Hardware r) {
-		super(r, "LLL");
+	public RightLeftScaleLeftSwitch(Hardware r) {
+		super(r, "RLL");
 	}
 
 	@Override
 	public void addActions() {
-		commands.addForwardD(324.5);
+		commands.addForwardD(240);
+		commands.addRotationGyro(-90);
+		commands.addForwardD(232);
 		commands.addRotationGyro(90);
+		commands.addForwardD(20);
 		commands.addSequence(0, 1);
 		
 		commands.addMastD(0);
@@ -21,10 +24,9 @@ public class LeftLeftScaleLeftSwitch extends AutoProgram{
 		commands.addEject();
 		commands.addSequence(1, 2, 3);
 		
+		commands.addForwardD(-20);
 		commands.addRotationGyro(90);
-		commands.addForwardD(92);
-		commands.addRotationGyro(-90);
-		commands.addForwardD(68);
+		commands.addForwardD(40);
 		commands.addRotationGyro(90);
 		commands.addSequence(3, 4);
 		

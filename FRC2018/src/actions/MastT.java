@@ -2,7 +2,6 @@ package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
@@ -37,10 +36,17 @@ public class MastT extends Action {
 	@Override
 	public void actionPeriodic() {
 		//if the mast is enabled
-		if(robot.mastEnabled){
-			//then set power smoothly
+		if(robot.mastEnabled && !forceStop()){
 			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
 		}
+	}
+	
+	//for use in teleop
+	public void setPower(double x) {
+		if((x > 0) && (x < robot.variables.getMinimumMastPower())){
+			power = robot.variables.getMinimumMastPower();
+		}
+		power = x;
 	}
 	
 	//this prevents a 0 to X acceleration jump in the first iteration of the action
@@ -51,10 +57,8 @@ public class MastT extends Action {
 
 	@Override
 	public boolean actionFinished() {
-		//if the timer has elapsed or the mast disabled
-		if(clock.get() > time || !robot.mastEnabled) {
-			//then finish the action
-			//set the mast to remain in position
+		//if the timer has elapsed or the mast disabled or a limit switch is hit
+		if(clock.get() > time || !robot.mastEnabled || forceStop()) {
 			robot.mast.set(ControlMode.PercentOutput, 0.1);
 			clock.stop();
 			return true;
@@ -68,4 +72,23 @@ public class MastT extends Action {
 		public String getAction() {
 			return "Time-based Mast";
 	}
+	
+	private boolean forceStop() {
+		//if any of the switches have incremented
+		if(robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
+			//if going down and top hit
+			if(robot.higherMastSwitch.get() && robot.mast.getMotorOutputPercent() <= 0) {
+				return false;
+			}
+			//if going up and bottom hit
+			else if(robot.lowerMastSwitch.get() && robot.mast.getMotorOutputPercent() >= 0){
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

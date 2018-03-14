@@ -12,10 +12,8 @@ public class Test extends AutoProgram{
 	
 	@Override
 	public void addActions() {
-		for(int a = 0; a < 4; ++a) {
-			commands.addRotationGyro(90);
-			commands.addForwardD(24);
-		}
-		commands.addSequence(0, 2);
+		commands.addMastD(10);
+		commands.addMastD(-10);
+		commands.addSequence(0, 0, 1);
 	}
 }
