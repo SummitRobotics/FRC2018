@@ -11,15 +11,16 @@ public class RightRightSwitchPower extends AutoProgram{
 	
 	@Override
 	public void addActions() {
-		commands.addMastT(10);
+		commands.addMastSwitch();
 		commands.addSequence(0, 1);
 		
 		commands.addForwardT(5, .6);
 		commands.addRotationGyro(90);
 		commands.addForwardT(2, .2);
-		commands.addExtend();	
-		commands.addClamp();
 		commands.addSequence(0, 2);
+		
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 
 }

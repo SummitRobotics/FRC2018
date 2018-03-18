@@ -7,10 +7,10 @@ public class Variables {
 	public static final int kSlotIdx = 0;
 	
 	//pidf values
-	public static final double p = .2;
+	public static final double p = 0.2;
 	public static final double i = 0;
 	public static final double d = 0;
-	public static final double f = .2;
+	public static final double f = 0.2;
 	
 	//defines the variables specific to the robot
 	private String robotName;
@@ -55,6 +55,8 @@ public class Variables {
 	//ramp
 	private int winchId;
 	private boolean winchReversed = false;
+	private double minWinchPower;
+	private int[] rampPistonIds = new int[2];
 	
 	//hall effect sensor
 	private int mastHallEffectSensorId;
@@ -75,7 +77,8 @@ public class Variables {
 		if(robotName == "A") {
 			wheelDiam = 6;
 			driveTrainWidth = 28;
-			minRotatePower = .2;
+			minRotatePower = .3;
+			minWinchPower = -.2;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -88,7 +91,7 @@ public class Variables {
 		else if(robotName == "B") {
 			wheelDiam = 8;
 			driveTrainWidth = 33;
-			minRotatePower = .3;
+			minRotatePower = .5;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -96,6 +99,7 @@ public class Variables {
 			rightReversedI = true;
 			leftIntakeId = 34;
 			winchId = 37;
+			winchReversed = true;
 			rightIntakeId = 38;
 			leftFollowerId = 32;
 			leftDriveId = 21;
@@ -103,14 +107,17 @@ public class Variables {
 			rightDriveId = 25;
 			clampIdA = 0;
 			clampIdB = 1;
-			extenderIdA = 2;
-			extenderIdB = 3;
+			extenderIdA = 3;
+			extenderIdB = 2;
 			mastId = 23;
 			mastReversed = true;
 			mastHallEffectSensorId = 0;
 			mastDistancePerPulse = 5;
 			higherMastId = 2;
 			lowerMastId = 1;
+			minWinchPower = 0;
+			rampPistonIds[0] = 4;
+			rampPistonIds[1] = 5;
 		}
 	}
 	
@@ -223,4 +230,12 @@ public class Variables {
 		return minRotatePower;
 	}
 	
+	
+	public double getWinchMinPower() {
+		return minWinchPower;
+	}
+	
+	public int[] getRampPistonIds(){
+		return rampPistonIds;
+	}
 }

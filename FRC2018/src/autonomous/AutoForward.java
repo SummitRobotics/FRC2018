@@ -6,7 +6,7 @@ import templates.AutoProgram;
 public class AutoForward extends AutoProgram{
 
 	public AutoForward(Hardware r) {
-		super(r, "STRAIGHT!");
+		super(r, "FOR");
 	}
 	
 	@Override

@@ -42,6 +42,11 @@ public class Subsequence {
 		return true;
 	}
 	
+	//force finish
+	public void forceStop() {
+		iteration = actions.size();
+	}
+	
 	public int[] requiredFlags() {
 		return prefix;
 	}

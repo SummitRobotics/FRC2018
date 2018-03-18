@@ -13,6 +13,8 @@ public class Vision extends Thread{
 	//initialize entries
 	public Vision() {
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
+		limelight.getEntry("ledMode").forceSetNumber(0);
+		limelight.getEntry("stream").forceSetNumber(2);
 	 	run();
 	}
 	
@@ -22,6 +24,10 @@ public class Vision extends Thread{
 			xOffset = limelight.getEntry("tx");
 			targetPresent= limelight.getEntry("tv");
 			area = limelight.getEntry("ta");
+			//the lemonlight never wants to eat its food
+			//so we'll need to shove the vegetables down its throat
+			limelight.getEntry("ledMode").forceSetNumber(0);
+			limelight.getEntry("stream").forceSetNumber(2);
 		}
 	}
 	

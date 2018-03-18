@@ -81,6 +81,18 @@ public class Sequence {
 		runningList.add(new MastT(robot, time, power));
 	}
 	
+	public void addMastTop() {
+		runningList.add(new MastT(robot, 5, .7));
+	}
+	
+	public void addMastBottom() {
+		runningList.add(new MastT(robot, 4, -.4));
+	}
+	
+	public void addMastSwitch() {
+		runningList.add(new MastT(robot, 3, .6));
+	}
+	
 	public void addDelay(double time) {
 		runningList.add(new Delay(robot, time));
 	}
@@ -91,13 +103,9 @@ public class Sequence {
 	
 	public void addEject() {
 		addExtend();
-		addDelay(.1);
-		addClamp();
 		addDelay(.25);
-		addExtend();
-	}
-	
-	public void retract() {
+		addClamp();
+		addDelay(1);
 		addExtend();
 	}
 	
@@ -143,7 +151,7 @@ public class Sequence {
 	//	This runs in the background
 	//
 	//**************//
-	public void run() throws InterruptedException{
+	public void run(){
 		for(int a = 0; a < branches.size(); ++a) {
 			if(!branches.get(a).isFinished() && subsequenceEnabled(branches.get(a))){
 				branches.get(a).run();
@@ -170,8 +178,6 @@ public class Sequence {
 		for(int a = 0; a < s.requiredFlags().length; ++a) {
 			for(int b = 0; b < flags.size(); ++b) {
 				if(flags.get(b).getIndex() == s.requiredFlags()[a] && !flags.get(b).isThrown()) {
-						SmartDashboard.putNumber("Index:", flags.get(b).getIndex());
-						SmartDashboard.putBoolean("Enabled:", false);
 						return false;
 				}
 			}

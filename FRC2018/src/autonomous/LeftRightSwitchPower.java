@@ -12,7 +12,7 @@ public class LeftRightSwitchPower extends AutoProgram{
 
 	@Override
 	public void addActions() {
-		commands.addMastT(10);
+		commands.addMastSwitch();
 		commands.addSequence(0, 1);
 		
 		commands.addForwardT(2, .2);
@@ -20,9 +20,10 @@ public class LeftRightSwitchPower extends AutoProgram{
 		commands.addForwardT(10, .5);
 		commands.addRotationGyro(-90);
 		commands.addForwardT(3, .2);
-		commands.addExtend();
-		commands.addClamp();
 		commands.addSequence(0, 2);
+		
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 
 }

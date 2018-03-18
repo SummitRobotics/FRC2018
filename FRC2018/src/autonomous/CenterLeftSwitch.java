@@ -11,7 +11,7 @@ public class CenterLeftSwitch extends AutoProgram{
 	
 	@Override
 	public void addActions() {
-		commands.addMastT(4, .5);
+		commands.addMastSwitch();
 		commands.addSequence(0, 1);
 		
 		commands.addForwardD(10);
@@ -19,10 +19,9 @@ public class CenterLeftSwitch extends AutoProgram{
 		commands.addForwardD(100);
 		commands.addRotationGyro(42.7);
 		commands.addForwardT(1.25, .3);
-		commands.addExtend();
-		commands.addForwardT(.75, 0);
-		commands.addClamp();
-		commands.addForwardT(.75, 0);
 		commands.addSequence(0, 2);
+		
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 }

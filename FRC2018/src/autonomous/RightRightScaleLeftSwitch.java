@@ -15,12 +15,14 @@ public class RightRightScaleLeftSwitch extends AutoProgram{
 		commands.addRotationGyro(-90);
 		commands.addSequence(0, 1);
 		
-		commands.addMastD(0);
+		commands.addMastTop();
 		commands.addSequence(0, 2);
 		
+		commands.addForwardD(10);
 		commands.addEject();
 		commands.addSequence(1, 2, 3);
 		
+		commands.addForwardD(-10);
 		commands.addRotationGyro(-90);
 		commands.addForwardD(92);
 		commands.addRotationGyro(90);
@@ -28,11 +30,11 @@ public class RightRightScaleLeftSwitch extends AutoProgram{
 		commands.addRotationGyro(-90);
 		commands.addSequence(3, 4);
 		
-		commands.addMastD(0);
+		commands.addMastBottom();
 		commands.addSequence(3, 5);
 		
 		commands.addAutoCube();
-		commands.addMastD(0);
+		commands.addMastSwitch();
 		commands.addEject();
 		commands.addSequence(5, 6);
 	}

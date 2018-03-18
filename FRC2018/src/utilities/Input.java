@@ -25,7 +25,6 @@ public class Input {
 	private UserInterface teleopChoice;
 	private UserInterface autoChoice;
 	
-	
 	//required autonomous information
 	private UserInterface position;
 	private UserInterface target;
@@ -74,8 +73,9 @@ public class Input {
 		//auto.add(new CenterRightSwitchPower(robot));
 		
 		//teleop methods
-		teleop.add(new Standard(robot));
+		teleop.add(new NewStandard(robot));
 		teleop.add(new Testing(robot));
+		teleop.add(new Standard(robot));
 		
 	}
 	
@@ -124,7 +124,7 @@ public class Input {
 			}
 			
 			for(int a = 0; a < auto.size(); ++a) {
-				if(auto.get(a).getName() == "STRAIGHT!") {
+				if(auto.get(a).getName() == "FOR") {
 					return auto.get(a);
 				}
 			}
@@ -138,21 +138,23 @@ public class Input {
 	private String getKey() {
 		char[] key = {' ',' ',' '};
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
-		if(gameData.length() > 0){
-			//target
+		if(!getMultiCube()) {
 			key[0] = getTarget();
-			//side of target
 			if(getTarget() == 'W') {
 				key[1] = gameData.charAt(0);
+			}
+			else if(getTarget() == 'I'){
+				return "FOR";
 			}
 			else {
 				key[1] = gameData.charAt(1);
 			}
-			//starting position
 			key[2] = getPosition();
 		}
 		else {
-			return "DEF";
+			key[0] = getPosition();
+			key[1] = gameData.charAt(1);
+			key[2] = gameData.charAt(2);
 		}
 		return String.valueOf(key).trim();
 	}
@@ -164,11 +166,11 @@ public class Input {
 	//
 	//**************//
 	private void displayTeleopInformation() {
-		teleopChoice = new UserInterface(convertTeleop(teleop), "TELEOP");
+		//teleopChoice = new UserInterface(convertTeleop(teleop), "TELEOP");
 	}
 	
 	public TeleopProgram getTeleop() {
-		return getTeleop(teleopChoice.getInput());
+		return teleop.get(0);
 	}
 	
 	//**************//
@@ -220,11 +222,15 @@ public class Input {
 	}
 	
 	private boolean getAutomatic() {
-		if(automaticEnabled.getInput() == "AUTOMATIC") {
-			return false;
-		}
-		else {
-			return false;
+		try {
+			if(automaticEnabled.getInput() == "AUTOMATIC") {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}catch(Exception e) {
+			return true;
 		}
 	}
 	
@@ -242,7 +248,15 @@ public class Input {
 	}
 	
 	private char getTarget() {
-		return target.getInput().charAt(1);
+		if(target.getInput() == "SWITCH"){
+			return 'W';
+		}
+		else if(target.getInput() == "SCALE"){
+			return 'C';
+		}
+		else{
+			return 'I';
+		}
 	}
 }
 

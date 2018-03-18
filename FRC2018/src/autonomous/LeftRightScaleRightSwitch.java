@@ -18,7 +18,7 @@ public class LeftRightScaleRightSwitch extends AutoProgram{
 		commands.addForwardD(20);
 		commands.addSequence(0, 1);
 		
-		commands.addMastD(0);
+		commands.addMastTop();
 		commands.addSequence(0, 2);
 		
 		commands.addEject();
@@ -30,11 +30,11 @@ public class LeftRightScaleRightSwitch extends AutoProgram{
 		commands.addRotationGyro(-90);
 		commands.addSequence(3, 4);
 		
-		commands.addMastD(0);
+		commands.addMastBottom();
 		commands.addSequence(3, 5);
 		
 		commands.addAutoCube();
-		commands.addMastD(0);
+		commands.addMastSwitch();
 		commands.addEject();
 		commands.addSequence(5, 6);
 	}

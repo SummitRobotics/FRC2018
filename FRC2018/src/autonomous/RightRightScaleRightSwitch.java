@@ -1,8 +1,6 @@
 package autonomous;
 
 import org.usfirst.frc.team5468.robot.Hardware;
-
-import templates.Action;
 import templates.AutoProgram;
 
 public class RightRightScaleRightSwitch extends AutoProgram{
@@ -13,30 +11,26 @@ public class RightRightScaleRightSwitch extends AutoProgram{
 
 	@Override
 	public void addActions() {
-		commands.addForwardD(324.5);
-		commands.addRotationGyro(-90);
+		commands.addMastTop();
 		commands.addSequence(0, 1);
 		
-		commands.addMastD(0);
+		commands.addForwardD(333);
+		commands.addRotationGyro(-90);
 		commands.addSequence(0, 2);
 		
+		commands.addForwardD(10);
 		commands.addEject();
+		commands.addForwardD(-10);
 		commands.addSequence(1, 2, 3);
 		
-		commands.addRotationGyro(-90);
-		commands.addForwardD(92);
-		commands.addRotationGyro(90);
-		commands.addForwardD(68);
-		commands.addRotationGyro(-90);
+		commands.addRotationGyro(-60);
+		commands.addForwardD(50);
 		commands.addSequence(3, 4);
 		
-		commands.addMastD(0);
+		commands.addDelay(2);
+		commands.addMastBottom();
 		commands.addSequence(3, 5);
-		
-		commands.addAutoCube();
-		commands.addMastD(0);
-		commands.addEject();
-		commands.addSequence(5, 6);
+
 	}
 
 }

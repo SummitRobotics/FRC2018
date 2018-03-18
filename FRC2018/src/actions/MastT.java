@@ -11,7 +11,7 @@ public class MastT extends Action {
 	//timer
 	private Timer clock;
 	//default power
-	private double power = .5;
+	private double power = .75;
 	
 	//constructor
 	public MastT(Hardware r, double t) {
@@ -36,7 +36,7 @@ public class MastT extends Action {
 	@Override
 	public void actionPeriodic() {
 		//if the mast is enabled
-		if(robot.mastEnabled && !forceStop()){
+		if(robot.mastEnabled){
 			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
 		}
 	}
@@ -58,8 +58,10 @@ public class MastT extends Action {
 	@Override
 	public boolean actionFinished() {
 		//if the timer has elapsed or the mast disabled or a limit switch is hit
-		if(clock.get() > time || !robot.mastEnabled || forceStop()) {
-			robot.mast.set(ControlMode.PercentOutput, 0.1);
+		if(clock.get() > time || !robot.mastEnabled) {
+			if(!this.finished){
+				robot.mast.set(ControlMode.PercentOutput, robot.variables.getMinimumMastPower());
+			}
 			clock.stop();
 			return true;
 		}
@@ -77,11 +79,11 @@ public class MastT extends Action {
 		//if any of the switches have incremented
 		if(robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
 			//if going down and top hit
-			if(robot.higherMastSwitch.get() && robot.mast.getMotorOutputPercent() <= 0) {
+			if(robot.higherMastSwitch.get() && robot.mast.getMotorOutputPercent() <= robot.variables.getMinimumMastPower()) {
 				return false;
 			}
 			//if going up and bottom hit
-			else if(robot.lowerMastSwitch.get() && robot.mast.getMotorOutputPercent() >= 0){
+			else if(robot.lowerMastSwitch.get() && robot.mast.getMotorOutputPercent() >= robot.variables.getMinimumMastPower()){
 				return false;
 			}
 			else {

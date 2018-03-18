@@ -74,9 +74,8 @@ public class Standard extends TeleopProgram{
 	//**************//
 	private void actuateClamp() {
 		if(detectChangeClamp()) {
-			automaticMast.setTarget(-1);
+			clamp.run();
 		}
-		automaticMast.run();
 	}
 
 	private boolean detectChangeClamp() {
@@ -106,9 +105,8 @@ public class Standard extends TeleopProgram{
 		
 	private void actuateExtender() {
 		if(detectChangeExtender()) {
-			automaticMast.setTarget(1);
+			extend.run();
 		}
-		automaticMast.run();
 	}
 	
 	private boolean detectChangeExtender() {
@@ -183,7 +181,7 @@ public class Standard extends TeleopProgram{
 		}
 		
 		return value;
-}
+	}
 	
 	//**************//
 	//
@@ -221,6 +219,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
+		robot.mast.set(ControlMode.PercentOutput, -robot.controller.getRawAxis(5));
 	}
 
 	@Override

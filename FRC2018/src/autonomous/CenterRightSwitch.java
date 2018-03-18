@@ -11,20 +11,18 @@ public class CenterRightSwitch extends AutoProgram{
 
 	@Override
 	public void addActions() {
-		commands.addMastT(4, .5);
+		commands.addMastSwitch();
 		commands.addSequence(0, 1);
 		
-		commands.addForwardD(10);
+		commands.addForwardD(20);
 		commands.addRotationGyro(42.7);
-		commands.addForwardD(80);
+		commands.addForwardD(60);
 		commands.addRotationGyro(-42.7);
 		commands.addForwardT(1.25, .3);
-		commands.addExtend();
-		commands.addForwardT(.75, 0);
-		commands.addClamp();
-		commands.addClamp();
-		commands.addForwardT(.75, 0);
 		commands.addSequence(0, 2);
+		
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 }
 

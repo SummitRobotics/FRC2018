@@ -1,8 +1,8 @@
+
 package autonomous;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import templates.AutoProgram;
-import utilities.Variables;
 
 public class Test extends AutoProgram{
 
@@ -10,10 +10,13 @@ public class Test extends AutoProgram{
 		super(r, "KEY");
 	}
 	
+	
 	@Override
 	public void addActions() {
-		commands.addMastD(10);
-		commands.addMastD(-10);
-		commands.addSequence(0, 0, 1);
+		commands.addForwardD(100);
+		commands.addForwardD(-100);
+		commands.addForwardD(100);
+		commands.addForwardD(-100);
+		commands.addSequence(0, 1);
 	}
 }

@@ -23,5 +23,6 @@ public class Output {
 		SmartDashboard.putBoolean("Controller Status", robot.controllerPresent);
 		SmartDashboard.putBoolean("Gyro Status", robot.gyroEnabled);
 		SmartDashboard.putBoolean("Limit Switch:", robot.limitSwitchPresent);
+		SmartDashboard.putBoolean("Ramp Status", robot.winchEnabled);
 	}
 }
