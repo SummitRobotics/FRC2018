@@ -15,14 +15,16 @@ public class RotateGyro extends Action{
 	private double error = 3;
 	
 	//percent
-	private double minPower = .5;
-	private double maxPower = .9;
+	private double minPower;
+	private double maxPower;
 	private double currentPower;
 	
 	//constructor
 	public RotateGyro(Hardware r, double theta) {
 		super(r);
 		angle = theta;
+		minPower = robot.variables.getMinRotatePower();
+		maxPower = minPower * 1.5;
 	}
 	
 	//constructor 2
@@ -30,6 +32,8 @@ public class RotateGyro extends Action{
 		super(r);
 		angle = theta;
 		maxPower = power;
+		minPower = robot.variables.getMinRotatePower();
+		maxPower = minPower * 1.5;
 	}
 
 	@Override

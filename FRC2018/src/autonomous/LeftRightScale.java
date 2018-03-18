@@ -10,21 +10,45 @@ public class LeftRightScale extends AutoProgram{
 	}
 
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addDelay(6);
+		commands.addMastTop();
+		commands.addSequence(0, 1);
 		
-		commands[1].addClamp();
-		commands[1].addMastT(10);
+		commands.addForwardD(250);
+		commands.addRotationGyro(90);
+		commands.addForwardD(228);
+		commands.addRotationGyro(-110);
+		commands.addForwardD(45);
+		commands.addSequence(0, 2);
 		
-		commands[0].addForwardD(230);
-		commands[0].addRotationGyro(-90);
-		commands[0].addForwardD(220);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardD(90);
-		commands[0].addRotationGyro(90);
-		//commands[0].addForwardT(2, .2);
-		commands[0].addExtend();
-		commands[0].addClamp();
+		commands.addEject();
+		commands.addForwardD(-40);
+		commands.addSequence(1, 2, 5);
 	}
-
+	
+	/*
+	 * @Override
+	public void addActions() {
+		commands.addDelay(6);
+		commands.addMastTop();
+		commands.addSequence(0, 1);
+		
+		commands.addForwardD(250);
+		commands.addRotationGyro(90);
+		commands.addSequence(0, 2);
+		
+		commands.addForwardD(236);
+		//commands.addRotationGyro(-100);
+		commands.addSequence(2, 3);
+		
+		commands.addRotationGyro(-100);
+		//commands.addForwardD(45);
+		commands.addSequence(1, 3, 4);
+		
+		/*
+		commands.addEject();
+		commands.addForwardD(-20);
+		commands.addSequence(1, 4, 5);
+		*/
 }

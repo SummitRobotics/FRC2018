@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import templates.Action;
 
 public class Delay extends Action{
-	//duration
+	//duration in seconds
 	private double time;
 	//timer
 	private Timer clock;

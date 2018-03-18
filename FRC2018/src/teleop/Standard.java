@@ -5,14 +5,12 @@ import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import actions.AutoIntake;
-import actions.Piston;
+import actions.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import functions.MotorControl;
-import functions.PID;
 import templates.TeleopProgram;
-import utilities.Variables;
 
 public class Standard extends TeleopProgram{
 	//pneumatics
@@ -24,17 +22,12 @@ public class Standard extends TeleopProgram{
 	//auto intake
 	private AutoIntake collect;
 	
-	//variables
-	protected double lateralExponent;
-	protected double rotateSensitivity;
-	protected double maxPower;
-	protected double threshold;
-	protected double joystickError;
+	//mast actions
+	private MastD automaticMast;
+	private MastT manualMast;
 	
-	//motor rampimg
-	private double maxDrivePowerChange = .09;
-	MotorControl leftRamping = new MotorControl(maxDrivePowerChange);
-	MotorControl rightRamping = new MotorControl(maxDrivePowerChange);
+	//joystick error
+	private double joystickError = .3;
 	
 	public Standard(Hardware r) {
 		super(r, "Standard");
@@ -44,12 +37,8 @@ public class Standard extends TeleopProgram{
 
 	@Override
 	public void teleopInit() {
-		lateralExponent = robot.variables.getDriver().getLateralExponent();
-		maxPower = robot.variables.getDriver().getMaxPower();
-		rotateSensitivity = robot.variables.getDriver().getRotationSensitivity();
-		threshold = robot.variables.getDriver().getThreshold();
-		joystickError = robot.variables.getDriver().getJoystickError();
 		collect = new AutoIntake(robot);
+		automaticMast = new MastD(robot, 0);
 	}
 
 	@Override
@@ -61,22 +50,21 @@ public class Standard extends TeleopProgram{
 			if(robot.pneumaticsEnabled) {
 				actuateClamp();
 				actuateExtender();
-				release();
+				//release();
 			}
 			if(robot.intakeEnabled) {
 				intake();
 			}
-			if(robot.mastEnabled) {
+			if(robot.mastEnabled && robot.hallPresent) {
 				mast();
 			}
 			if(robot.lemonlightPresent) {
 				//autoCollect();
 			}
 		}
-		if(robot.controller.getRawButton(4)) {
-			robot.leftDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
-			robot.rightDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
-		}
+		SmartDashboard.putNumber("Mast Encoder:", robot.mastEncoder.get());
+		SmartDashboard.putBoolean("Bottom:", robot.lowerMastSwitch.get());
+		SmartDashboard.putBoolean("Top:", robot.higherMastSwitch.get());
 	}
 	
 	//**************//
@@ -108,11 +96,6 @@ public class Standard extends TeleopProgram{
 		}
 	}
 	
-	//**************//
-	//
-	//	Clamp Toggle : X		
-	//
-	//**************//
 	private void release() {
 		if(robot.controller.getRawButton(2)) {
 			robot.extender.set(DoubleSolenoid.Value.kReverse);
@@ -120,20 +103,9 @@ public class Standard extends TeleopProgram{
 		}
 	}
 		
-	//**************//
-	//
-	//	Extender Toggle : A	
-	//
-	//**************//
 	private void actuateExtender() {
 		if(detectChangeExtender()) {
 			extend.run();
-			/*
-			 * if(extend == out){
-			 * intake.set(-)
-			 * else{
-			 * intake.set(0)
-			 */
 		}
 	}
 	
@@ -172,10 +144,7 @@ public class Standard extends TeleopProgram{
 	}
 	
 	private double maxPower(){
-		if(robot.controller.getRawButton(4)){
-			return .3;
-		}
-		return .75;
+		return (robot.variables.getMastRange()[1] - robot.mastEncoder.getDistance())/robot.variables.getMastRange()[1];
 	}
 	
 	public double toExponential(double value, double exponent)
@@ -212,7 +181,7 @@ public class Standard extends TeleopProgram{
 		}
 		
 		return value;
-}
+	}
 	
 	//**************//
 	//
@@ -235,6 +204,7 @@ public class Standard extends TeleopProgram{
 		robot.winch.set(ControlMode.PercentOutput, controllerOutput);
 	}
 	
+	@SuppressWarnings("unused")
 	private void autoCollect() {
 		if(robot.controller.getRawButton(2)) {
 			collect.run();
@@ -249,11 +219,7 @@ public class Standard extends TeleopProgram{
 	//
 	//**************//
 	private void mast() {
-		SmartDashboard.putNumber("Power", robot.mast.getMotorOutputPercent());
-		robot.mast.set(ControlMode.PercentOutput, -deadzone(robot.controller.getRawAxis(5), joystickError));
-		if(deadzone(robot.controller.getRawAxis(5),joystickError) == 0){
-			robot.mast.set(ControlMode.PercentOutput, .1);
-		}
+		robot.mast.set(ControlMode.PercentOutput, -robot.controller.getRawAxis(5));
 	}
 
 	@Override

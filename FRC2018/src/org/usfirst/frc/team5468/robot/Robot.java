@@ -7,11 +7,9 @@
 
 package org.usfirst.frc.team5468.robot;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import templates.*;
 import utilities.*;
-
 
 public class Robot extends IterativeRobot {
 	private Hardware robot;
@@ -36,7 +34,6 @@ public class Robot extends IterativeRobot {
 		auto = input.getAuto();
 		robot.enableCompressor(true);
 		auto.autonomousInit();
-		robot.clamp.set(DoubleSolenoid.Value.kOff);
 	}
 
 	@Override
@@ -50,7 +47,6 @@ public class Robot extends IterativeRobot {
 	public void teleopInit(){
 		lemonlight = new Vision();
 		teleop = input.getTeleop();
-		robot.variables.setDriver(input.getDriver());
 		robot.enableCompressor(true);
 		teleop.teleopInit();
 	}
@@ -61,7 +57,6 @@ public class Robot extends IterativeRobot {
 		output.update();
 		teleop.teleopPeriodic();
 	}
-	
 	
 	@Override
 	public void disabledInit() {

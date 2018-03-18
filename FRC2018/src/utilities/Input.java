@@ -1,16 +1,13 @@
 package utilities;
 
 import java.util.ArrayList;
-
 import org.usfirst.frc.team5468.robot.Hardware;
 import autonomous.*;
-import drivers.*;
 import teleop.*;
 import templates.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 //**************//
 //
@@ -23,26 +20,23 @@ public class Input {
 	//pre existing classes
 	private ArrayList<AutoProgram> auto = new ArrayList<AutoProgram>();
 	private ArrayList<TeleopProgram> teleop = new ArrayList<TeleopProgram>();
-	private ArrayList<Driver> driver = new ArrayList<Driver>();
 	
 	//optional user input
 	private UserInterface teleopChoice;
 	private UserInterface autoChoice;
-	private UserInterface driveChoice;
-	private UserInterface encoderAuto;
 	
 	//required autonomous information
 	private UserInterface position;
 	private UserInterface target;
-
+	private UserInterface multiCubeEnabled;
+	private UserInterface automaticEnabled;
+	
 	public Input(Hardware r) {
 		robot = r;
 		addExistingClasses();
 		displayAutoInformation();
 		displayAutoPrereq();
 		displayTeleopInformation();
-		displayDrivers();
-		displayEncoderAuto();
 	}
 	
 	private void addExistingClasses() {
@@ -60,20 +54,29 @@ public class Input {
 		auto.add(new CenterLeftSwitch(robot));
 		auto.add(new CenterRightSwitch(robot));
 		
+		//divine multi cube methods of ascension
+		auto.add(new LeftLeftScaleLeftSwitch(robot));
+		auto.add(new LeftLeftScaleRightSwitch(robot));
+		auto.add(new LeftRightScaleRightSwitch(robot));
+		auto.add(new LeftRightScaleLeftSwitch(robot));
+		auto.add(new RightRightScaleRightSwitch(robot));
+		auto.add(new RightLeftScaleLeftSwitch(robot));
+		auto.add(new RightLeftScaleRightSwitch(robot));
+		auto.add(new RightRightScaleLeftSwitch(robot));
+		
 		//filthy power based auto methods
-		auto.add(new RightRightSwitchPower(robot));
-		auto.add(new RightLeftSwitchPower(robot));
-		auto.add(new LeftRightSwitchPower(robot));
-		auto.add(new LeftLeftSwitchPower(robot));
-		auto.add(new CenterLeftSwitchPower(robot));
-		auto.add(new CenterRightSwitchPower(robot));
+		//auto.add(new RightRightSwitchPower(robot));
+		//auto.add(new RightLeftSwitchPower(robot));
+		//auto.add(new LeftRightSwitchPower(robot));
+		//auto.add(new LeftLeftSwitchPower(robot));
+		//auto.add(new CenterLeftSwitchPower(robot));
+		//auto.add(new CenterRightSwitchPower(robot));
 		
 		//teleop methods
-		teleop.add(new Standard(robot));
+		teleop.add(new NewStandard(robot));
 		teleop.add(new Testing(robot));
+		teleop.add(new Standard(robot));
 		
-		//different drivers
-		driver.add(new Programming());
 	}
 	
 	//**************//
@@ -84,7 +87,7 @@ public class Input {
 	//
 	//**************//
 	private void displayAutoInformation() {
-		autoChoice = new UserInterface(convertAuto(auto), "Autonomous");
+		autoChoice = new UserInterface(convertAuto(auto), "AUTONOMOUS");
 	}
 	
 	private void displayAutoPrereq() {
@@ -96,20 +99,23 @@ public class Input {
 		ArrayList<String> tar = new ArrayList<String>();
 		tar.add("SWITCH");
 		tar.add("SCALE");
+		tar.add("LINE");
 		
-		position = new UserInterface(pos, "Position");
-		target = new UserInterface(tar, "Target");
-	}
-	
-	private void displayEncoderAuto() {
+		ArrayList<String> mc = new ArrayList<String>();
+		mc.add("MULTI CUBE DISABLED");
+		mc.add("MULTI CUBE ENABLED");
+		
 		ArrayList<String> enc = new ArrayList<String>();
 		enc.add("AUTOMATIC");
 		enc.add("MANUAL");
-		encoderAuto = new UserInterface(convertEnc(enc), "Encoder Status");
+		position = new UserInterface(pos, "POSITION");
+		target = new UserInterface(tar, "TARGET");
+		multiCubeEnabled = new UserInterface(mc, "MULTI CUBE STATUS:");
+		automaticEnabled = new UserInterface(convertEnc(enc), "AUTO DETERMINATION:");
 	}
 	
 	public AutoProgram getAuto() {
-		if(getEncoder() == true){
+		if(getAutomatic() == true){
 			for(int a = 0; a < auto.size(); ++a) {
 				SmartDashboard.putString("AutoKEY", getKey());
 				if(auto.get(a).getName().equals(getKey())) {
@@ -118,7 +124,7 @@ public class Input {
 			}
 			
 			for(int a = 0; a < auto.size(); ++a) {
-				if(auto.get(a).getName() == "STRAIGHT!") {
+				if(auto.get(a).getName() == "FOR") {
 					return auto.get(a);
 				}
 			}
@@ -130,26 +136,25 @@ public class Input {
 	
 	//key generator for autonomous
 	private String getKey() {
-		char[] key = {' ',' ',' ',' '};
+		char[] key = {' ',' ',' '};
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
-		if(gameData.length() > 0){
-			//target
+		if(!getMultiCube()) {
 			key[0] = getTarget();
-			//side of target
 			if(getTarget() == 'W') {
 				key[1] = gameData.charAt(0);
+			}
+			else if(getTarget() == 'I'){
+				return "FOR";
 			}
 			else {
 				key[1] = gameData.charAt(1);
 			}
-			//starting position
 			key[2] = getPosition();
-			if(!getEncoder()) {
-				key[3] = 'P';
-			}
 		}
 		else {
-			return "DEF";
+			key[0] = getPosition();
+			key[1] = gameData.charAt(1);
+			key[2] = gameData.charAt(2);
 		}
 		return String.valueOf(key).trim();
 	}
@@ -161,19 +166,11 @@ public class Input {
 	//
 	//**************//
 	private void displayTeleopInformation() {
-		teleopChoice = new UserInterface(convertTeleop(teleop), "Teleop");
-	}
-	
-	private void displayDrivers() {
-		driveChoice = new UserInterface(convertDriver(driver), "Driver");
+		//teleopChoice = new UserInterface(convertTeleop(teleop), "TELEOP");
 	}
 	
 	public TeleopProgram getTeleop() {
-		return getTeleop(teleopChoice.getInput());
-	}
-	
-	public Driver getDriver() {
-		return getDriver(driveChoice.getInput());
+		return teleop.get(0);
 	}
 	
 	//**************//
@@ -182,14 +179,6 @@ public class Input {
 	//	UserInterface Conversion
 	//
 	//**************//
-	private ArrayList<String> convertDriver(ArrayList<Driver> dr) {
-		ArrayList<String> values = new ArrayList<String>();
-		for(int a = 0; a < dr.size(); ++a) {
-			values.add(dr.get(a).getName());
-		}
-		return values;
-	}
-	
 	private ArrayList<String> convertAuto(ArrayList<AutoProgram> au) {
 		ArrayList<String> values = new ArrayList<String>();
 		for(int a = 0; a < au.size(); ++a) {
@@ -214,15 +203,6 @@ public class Input {
 		return values;
 	}
 	
-	private Driver getDriver(String dr) {
-		for(int a = 0; a < driver.size(); ++a) {
-			if(driver.get(a).getName() == dr) {
-				return driver.get(a);
-			}
-		}
-		return null;
-	}
-	
 	private TeleopProgram getTeleop(String te) {
 		for(int a = 0; a < teleop.size(); ++a) {
 			if(teleop.get(a).getName() == te) {
@@ -241,8 +221,21 @@ public class Input {
 		return null;
 	}
 	
-	private boolean getEncoder() {
-		if(encoderAuto.getInput() == "AUTOMATIC") {
+	private boolean getAutomatic() {
+		try {
+			if(automaticEnabled.getInput() == "AUTOMATIC") {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}catch(Exception e) {
+			return true;
+		}
+	}
+	
+	private boolean getMultiCube() {
+		if(multiCubeEnabled.getInput() == "MULTI CUBE ENABLED") {
 			return true;
 		}
 		else {
@@ -255,7 +248,15 @@ public class Input {
 	}
 	
 	private char getTarget() {
-		return target.getInput().charAt(1);
+		if(target.getInput() == "SWITCH"){
+			return 'W';
+		}
+		else if(target.getInput() == "SCALE"){
+			return 'C';
+		}
+		else{
+			return 'I';
+		}
 	}
 }
 

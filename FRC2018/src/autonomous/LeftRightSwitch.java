@@ -11,19 +11,19 @@ public class LeftRightSwitch extends AutoProgram{
 	}
 
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
-		//commands[1].addClamp();
-		commands[1].addMastT(4, .5);
+	public void addActions() {
+		commands.addMastSwitch();
+		commands.addSequence(0, 1);
 		
-		commands[0].addForwardD(240);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardD(190);
-		commands[0].addRotationGyro(90);
-		commands[0].addForwardT(4, .2);
-		commands[0].addExtend();
-		commands[0].addForwardT(.5, 0);
-		commands[0].addClamp();
+		commands.addForwardD(240);
+		commands.addRotationGyro(90);
+		commands.addForwardD(190);
+		commands.addRotationGyro(90);
+		commands.addForwardT(4, .2);
+		commands.addSequence(0, 2);
+		
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 
 }

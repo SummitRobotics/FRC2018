@@ -8,20 +8,19 @@ public class RightRightSwitch extends AutoProgram{
 	public RightRightSwitch(Hardware r) {
 		super(r,"WRR");
 	}
-
+	
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addMastSwitch();
+		commands.addSequence(0, 1);
 		
-		//commands[1].addClamp();
-		commands[1].addMastT(4, .5);
+		commands.addForwardD(158);
+		commands.addRotationGyro(-90);
+		commands.addForwardT(2, .2);
+		commands.addSequence(0, 2);
 		
-		commands[0].addForwardD(158);
-		commands[0].addRotationGyro(-90);
-		commands[0].addForwardT(2, .2);
-		commands[0].addExtend();
-		commands[0].addForwardT(.5, 0);
-		commands[0].addClamp();
+		commands.addEject();
+		commands.addSequence(1, 2, 3);
 	}
 
 }

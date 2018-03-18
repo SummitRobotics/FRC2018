@@ -1,8 +1,6 @@
 package utilities;
+
 import org.usfirst.frc.team5468.robot.Hardware;
-
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Output {
@@ -24,5 +22,7 @@ public class Output {
 		SmartDashboard.putBoolean("Hall Effect Status", robot.hallPresent);
 		SmartDashboard.putBoolean("Controller Status", robot.controllerPresent);
 		SmartDashboard.putBoolean("Gyro Status", robot.gyroEnabled);
+		SmartDashboard.putBoolean("Limit Switch:", robot.limitSwitchPresent);
+		SmartDashboard.putBoolean("Ramp Status", robot.winchEnabled);
 	}
 }

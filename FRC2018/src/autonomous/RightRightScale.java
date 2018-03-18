@@ -10,16 +10,26 @@ public class RightRightScale extends AutoProgram {
 	}
 
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addMastTop();
+		commands.addSequence(0, 1);
 		
-		commands[1].addClamp();
-		commands[1].addMastT(10);
-		commands[0].addForwardD(333);
-		commands[0].addRotationGyro(-90);
-		//commands[0].addForwardT(2, .2);
-		commands[0].addExtend();
-		commands[0].addClamp();
+		commands.addForwardD(333);
+		commands.addRotationGyro(-90);
+		commands.addSequence(0, 2);
+		
+		commands.addForwardD(10);
+		commands.addEject();
+		commands.addForwardD(-10);
+		commands.addSequence(1, 2, 3);
+		
+		commands.addRotationGyro(-60);
+		commands.addForwardD(50);
+		commands.addSequence(3, 4);
+		
+		commands.addDelay(2);
+		commands.addMastBottom();
+		commands.addSequence(3, 5);
 	}
 
 }

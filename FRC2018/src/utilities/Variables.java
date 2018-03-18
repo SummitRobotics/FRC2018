@@ -1,7 +1,5 @@
 package utilities;
 
-import templates.Driver;
-
 public class Variables {
 	//constants relevant for encoders
 	public static final int delay = 0;
@@ -9,18 +7,18 @@ public class Variables {
 	public static final int kSlotIdx = 0;
 	
 	//pidf values
-	public static final double p = .2;
+	public static final double p = 0.2;
 	public static final double i = 0;
 	public static final double d = 0;
-	public static final double f = .2;
+	public static final double f = 0.2;
 	
 	//defines the variables specific to the robot
 	private String robotName;
-	private Driver driver;
 	
 	//necessary for correct distance calculation
 	private double wheelDiam;
 	private double driveTrainWidth;
+	private double minRotatePower;
 	
 	//reversing polarity of power output
 	private boolean leftReversed = false;
@@ -48,16 +46,24 @@ public class Variables {
 	private boolean leftReversedI = false;
 	private boolean rightReversedI = false;
 	
-	//mast 
+	//mast motor
 	private int mastId;
 	private boolean mastReversed = false;
 	private boolean mastPhase = false;
+	private double minStallingPower = .15;
 	
 	//ramp
 	private int winchId;
 	private boolean winchReversed = false;
+	private double minWinchPower;
+	private int[] rampPistonIds = new int[2];
 	
-	private int hallId;
+	//hall effect sensor
+	private int mastHallEffectSensorId;
+	private int mastDistancePerPulse;
+	private int[] mastEncoderRange = {1, 10000};
+	
+	//switches
 	private int intakeSwitchId;
 	private int lowerMastId;
 	private int higherMastId;
@@ -71,6 +77,8 @@ public class Variables {
 		if(robotName == "A") {
 			wheelDiam = 6;
 			driveTrainWidth = 28;
+			minRotatePower = .3;
+			minWinchPower = -.2;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -83,6 +91,7 @@ public class Variables {
 		else if(robotName == "B") {
 			wheelDiam = 8;
 			driveTrainWidth = 33;
+			minRotatePower = .5;
 			leftReversed = true;
 			rightReversed = false;
 			leftSensorPhase = false;
@@ -90,17 +99,25 @@ public class Variables {
 			rightReversedI = true;
 			leftIntakeId = 34;
 			winchId = 37;
+			winchReversed = true;
 			rightIntakeId = 38;
 			leftFollowerId = 32;
 			leftDriveId = 21;
 			rightFollowerId = 36;
 			rightDriveId = 25;
-			clampIdA = 2;
-			clampIdB = 3;
-			extenderIdA = 0;
-			extenderIdB = 1;
+			clampIdA = 0;
+			clampIdB = 1;
+			extenderIdA = 3;
+			extenderIdB = 2;
 			mastId = 23;
 			mastReversed = true;
+			mastHallEffectSensorId = 0;
+			mastDistancePerPulse = 5;
+			higherMastId = 2;
+			lowerMastId = 1;
+			minWinchPower = 0;
+			rampPistonIds[0] = 4;
+			rampPistonIds[1] = 5;
 		}
 	}
 	
@@ -173,18 +190,6 @@ public class Variables {
 		return driveTrainWidth;
 	}
 	
-	public void setDriver(Driver x) {
-		driver = x;
-	}
-	
-	public Driver getDriver() {
-		return driver;
-	}
-	
-	public int getHallId() {
-		return hallId;
-	}
-	
 	public int getIntakeSwitchId() {
 		return intakeSwitchId;
 	}
@@ -203,5 +208,34 @@ public class Variables {
 	
 	public boolean getWinchPolarity() {
 		return winchReversed;
+	}
+	
+	public int getMastSensorId() {
+		return mastHallEffectSensorId;
+	}
+	
+	public double getDistancePerPulse() {
+		return mastDistancePerPulse;
+	}
+	
+	public double getMinimumMastPower() {
+		return minStallingPower;
+	}
+	
+	public int[] getMastRange() {
+		return mastEncoderRange;
+	}
+	
+	public double getMinRotatePower() {
+		return minRotatePower;
+	}
+	
+	
+	public double getWinchMinPower() {
+		return minWinchPower;
+	}
+	
+	public int[] getRampPistonIds(){
+		return rampPistonIds;
 	}
 }

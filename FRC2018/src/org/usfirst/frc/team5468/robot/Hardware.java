@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import utilities.Variables;
 import utilities.Vision;
 
@@ -30,6 +30,7 @@ public class Hardware {
 	public Compressor compressor;
 	public DoubleSolenoid clamp;
 	public DoubleSolenoid extender;
+	public DoubleSolenoid ramp;
 	
 	//carriage lift
 	public TalonSRX mast;
@@ -48,17 +49,12 @@ public class Hardware {
 	private double relativeAngle;
 	
 	//hall effect encoder for the mast
-	public Counter hall;
+	public Counter mastEncoder;
 	
 	//limit switches
-	private DigitalInput intakeSwitch;
-	private DigitalInput lowerMastSwitch;
-	private DigitalInput higherMastSwitch;
-	
-	//limit switch counter, for better detection of events
-	public Counter intakeInteraction;
-	public Counter lowerMastInteraction;
-	public Counter higherMastInteraction;
+	public DigitalInput intakeSwitch;
+	public DigitalInput lowerMastSwitch;
+	public DigitalInput higherMastSwitch;
 	
 	//the limelight camera
 	public Vision lemonlight;
@@ -74,6 +70,7 @@ public class Hardware {
 	public boolean hallPresent;
 	public boolean lemonlightPresent;
 	public boolean limitSwitchPresent;
+	public boolean winchEnabled;
 	
 	//**************//
 	//
@@ -104,48 +101,54 @@ public class Hardware {
 		if(!gyroEnabled) {
 			initGyro();
 		}else {
-			//refreshGyro();
+			refreshGyro();
 		}
 		if(!hallPresent) {
 			initCounter();
 		}else {
-			//refreshCounter();
+			refreshCounter();
 		}
 		if(!controllerPresent) {
 			initGamepad();
 		}else {
-			//refreshGamepad();
+			refreshGamepad();
 		}
 		if(!driveEnabled) {
 			initDrive();
 		}else {
-			//refreshDrive();
+			refreshDrive();
 		}
 		if(!pneumaticsEnabled) {
 			initPneumatics();
 		}else {
-			//refreshPneumatics();
+			refreshPneumatics();
 		}
 		if(!intakeEnabled) {
 			initIntake();
 		}else {
-			//refreshIntake();
+			refreshIntake();
 		}
 		if(!mastEnabled) {
 			initMast();
 		}else {
-			//refreshMast();
+			refreshMast();
 		}
 		if(!lemonlightPresent) {
 			initVision();
 		}else {
-			//refreshVision();
+			refreshVision();
 		}
 		if(!limitSwitchPresent) {
 			initLimitSwitch();
 		}
 		else {
-			//refreshLimit();
+			refreshLimit();
+		}
+		if(!winchEnabled) {
+			initWinch();
+		}
+		else {
+			refreshWinch();
 		}
 	}
 	
@@ -176,8 +179,9 @@ public class Hardware {
 	//adjust distance per pulse
 	private void initCounter() {
 		try {
-			hall = new Counter(variables.getHallId());
-			hall.setDistancePerPulse(1);
+			mastEncoder = new Counter(variables.getMastSensorId());
+			mastEncoder.setDistancePerPulse(variables.getDistancePerPulse());
+			mastEncoder.reset();
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
@@ -186,7 +190,7 @@ public class Hardware {
 	
 	private void refreshCounter() {
 		try {
-			hall.get();
+			mastEncoder.get();
 			hallPresent = true;
 		}catch(Exception e) {
 			hallPresent = false;
@@ -195,12 +199,9 @@ public class Hardware {
 	
 	private void initLimitSwitch() {
 		try {
-			intakeSwitch = new DigitalInput(variables.getIntakeSwitchId());
+			//intakeSwitch = new DigitalInput(variables.getIntakeSwitchId());
 			lowerMastSwitch = new DigitalInput(variables.getLowerSwitchId());
 			higherMastSwitch = new DigitalInput(variables.getHigherSwitchId());
-			intakeInteraction = new Counter(intakeSwitch);
-			lowerMastInteraction = new Counter(lowerMastSwitch);
-			higherMastInteraction = new Counter(higherMastSwitch);
 			limitSwitchPresent = true;
 		}catch(Exception e) {
 			limitSwitchPresent = false;
@@ -209,9 +210,8 @@ public class Hardware {
 	
 	private void refreshLimit() {
 		try {
-			intakeInteraction.get();
-			lowerMastInteraction.get();
-			higherMastInteraction.get();
+			lowerMastSwitch.get();
+			higherMastSwitch.get();
 			limitSwitchPresent = true;
 		}catch(Exception e) {
 			limitSwitchPresent = false;
@@ -351,10 +351,10 @@ public class Hardware {
 		rightDrive.config_kD(0, Variables.d, Variables.delay);
 		
 		/* set acceleration and vcruise velocity - see documentation */
-		leftDrive.configMotionCruiseVelocity(1000, Variables.delay);
+		leftDrive.configMotionCruiseVelocity(3000, Variables.delay);
 		leftDrive.configMotionAcceleration(500, Variables.delay);
 		
-		rightDrive.configMotionCruiseVelocity(1000, Variables.delay);
+		rightDrive.configMotionCruiseVelocity(3000, Variables.delay);
 		rightDrive.configMotionAcceleration(500, Variables.delay);
 		
 		/* zero the sensor */
@@ -369,10 +369,16 @@ public class Hardware {
 	//**************//
 	private void initPneumatics() {
 		try {
-			clamp = new DoubleSolenoid(variables.getClampIds()[0], variables.getClampIds()[1]);
-			extender = new DoubleSolenoid(variables.getExtenderIds()[0], variables.getExtenderIds()[1]);
-			compressor = new Compressor(0);
-			pneumaticsEnabled = true;
+			if((variables.getClampIds()[0] != 0 || variables.getClampIds()[1] != 0) && (variables.getExtenderIds()[0] != 0 || variables.getExtenderIds()[1] != 0)) { 
+				clamp = new DoubleSolenoid(variables.getClampIds()[0], variables.getClampIds()[1]);
+				extender = new DoubleSolenoid(variables.getExtenderIds()[0], variables.getExtenderIds()[1]);
+				ramp = new DoubleSolenoid(variables.getRampPistonIds()[0], variables.getRampPistonIds()[1]);
+				compressor = new Compressor(0);
+				pneumaticsEnabled = true;
+			}
+			else {
+				pneumaticsEnabled = false;
+			}
 		}catch(Exception e) {
 			pneumaticsEnabled = false;
 		}
@@ -382,6 +388,7 @@ public class Hardware {
 		try {
 			clamp.get();
 			extender.get();
+			ramp.get();
 			compressor.getClosedLoopControl();
 			pneumaticsEnabled = true;
 		}catch(Exception e) {
@@ -403,10 +410,15 @@ public class Hardware {
 	//**************//
 	private void initIntake() {
 		try {
-			intake = new VictorSPX(variables.getIntakeWheelIds()[0]);
-			intake2 = new VictorSPX(variables.getIntakeWheelIds()[1]);
-			configIntake();
-			intakeEnabled = true;
+			if(!(variables.getIntakeWheelIds()[0] == 0 || variables.getIntakeWheelIds()[1] == 0)) {
+				intake = new VictorSPX(variables.getIntakeWheelIds()[0]);
+				intake2 = new VictorSPX(variables.getIntakeWheelIds()[1]);
+				configIntake();
+				intakeEnabled = true;
+			}
+			else {
+				intakeEnabled = false;
+			}
 		}catch(Exception e) {
 			intakeEnabled = false;
 		}
@@ -414,9 +426,14 @@ public class Hardware {
 	
 	private void refreshIntake() {
 		try {
-			intake.getMotorOutputPercent();
-			intake2.getMotorOutputPercent();
-			intakeEnabled = true;
+			if(!(variables.getIntakeWheelIds()[0] == 0 || variables.getIntakeWheelIds()[1] == 0)) {
+				intake.getMotorOutputPercent();
+				intake2.getMotorOutputPercent();
+				intakeEnabled = true;
+			}
+			else {
+				intakeEnabled = false;
+			}
 		}catch(Exception e) {
 			intakeEnabled = false;
 		}
@@ -431,15 +448,19 @@ public class Hardware {
 	//**************//
 	//
 	//	Setup and configure mast
-	//  TO DO: Implement Hall Effect encoder
+	//  TODO: Implement Hall Effect encoder
 	//
 	//**************//
 	private void initMast() {
 		try {
-			mast = new TalonSRX(variables.getMastId());
-			winch = new VictorSPX(variables.getWinchId());
-			configMast();
-			mastEnabled = true;
+			if(variables.getMastId() != 0) {
+				mast = new TalonSRX(variables.getMastId());
+				configMast();
+				mastEnabled = true;
+			}
+			else {
+				mastEnabled = false;
+			}
 		}catch(Exception e) {
 			mastEnabled = false;
 		}
@@ -447,9 +468,13 @@ public class Hardware {
 	
 	private void refreshMast() {
 		try {
-			mast.getMotorOutputPercent();
-			winch.getMotorOutputPercent();
-			mastEnabled = true;
+			if(variables.getMastId() != 0) {
+				mast.getMotorOutputPercent();
+				mastEnabled = true;
+			}
+			else {
+				mastEnabled = false;
+			}
 		}catch(Exception e) {
 			mastEnabled = false;
 		}
@@ -457,7 +482,39 @@ public class Hardware {
 	
 	private void configMast() {
 		mast.setInverted(variables.getMastPolarity());
-		winch.setInverted(variables.getWinchPolarity());
 		mast.setSensorPhase(variables.getMastPhase());
+	}
+	
+	private void initWinch() {
+		try {
+			if(variables.getWinchId() != 0) {
+				winch = new VictorSPX(variables.getWinchId());
+				configWinch();
+				winchEnabled = true;
+			}
+			else {
+				winchEnabled = false;
+			}
+		}catch(Exception e) {
+			winchEnabled = false;
+		}
+	}
+	
+	private void refreshWinch() {
+		try {
+			if(variables.getWinchId() != 0) {
+				winch.getMotorOutputPercent();
+				winchEnabled = true;
+			}
+			else {
+				winchEnabled = false;
+			}
+		}catch(Exception e) {
+			winchEnabled = true;
+		}
+	}
+	
+	private void configWinch() {
+		winch.setInverted(variables.getWinchPolarity());
 	}
 }

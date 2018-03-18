@@ -6,13 +6,13 @@ import templates.AutoProgram;
 public class AutoForward extends AutoProgram{
 
 	public AutoForward(Hardware r) {
-		super(r, "STRAIGHT!");
+		super(r, "FOR");
 	}
-
+	
 	@Override
-	public void autonomousInit() {
-		initCommands(1);
-		commands[0].addForwardD(144);
+	public void addActions() {
+		commands.addForwardD(144);
+		commands.addSequence(0, 1);
 	}
 
 }

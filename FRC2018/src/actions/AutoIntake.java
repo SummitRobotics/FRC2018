@@ -11,11 +11,11 @@ public class AutoIntake extends Action{
 	private PID lateralPID = new PID(.1, 0, 0);
 	
 	//tuning
-	private double maxOutput = .5;
+	private double maxOutput = .4;
 	//maximum angle offset from cube - must be nonzero
-	private double maxError = 1;
+	private double maxError = 2;
 	//how large the cube should be present on the screen before stopping
-	private double targetSize = 15;
+	private double targetSize = 20;
 	//to prevent signicicant jerkiness during auto
 	private double lastSteering = 0;
 	
@@ -72,8 +72,7 @@ public class AutoIntake extends Action{
 	@Override
 	public boolean actionFinished() {
 		//if the lemonlight is disconnected, no targets are found, or the target size is aligned and close
-		if(!robot.lemonlightPresent || (robot.lemonlight.getTargetPresent() == 1 && robot.lemonlight.getArea() >= targetSize)) {
-			//then finish action
+		if(!robot.lemonlightPresent || (robot.lemonlight.getTargetPresent() == 1 && robot.lemonlight.getArea() >= targetSize) || robot.lemonlight.getTargetPresent() == 0) {
 			robot.leftDrive.set(ControlMode.PercentOutput, 0);
 			robot.rightDrive.set(ControlMode.PercentOutput, 0);
 			return true;

@@ -21,7 +21,9 @@ public class Piston extends Action{
 
 	@Override
 	public void actionPeriodic() {
+		//if the pneumatics are all functional
 		if(robot.pneumaticsEnabled) {
+			//then flip state
 			if(piston.get() == DoubleSolenoid.Value.kForward) {
 				piston.set(DoubleSolenoid.Value.kReverse);
 			}

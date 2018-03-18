@@ -37,7 +37,6 @@ public class ForwardD extends Action {
 	public boolean actionFinished() {
 		//if we have reached the target or something breaks
 		if(Math.abs(robot.leftDrive.getSelectedSensorPosition(0) - distance) < error || !robot.driveEnabled) {
-			//then set the targets directly and finish action
 			robot.leftDrive.set(ControlMode.MotionMagic, robot.leftDrive.getSelectedSensorPosition(0));
 			robot.rightDrive.set(ControlMode.MotionMagic, robot.rightDrive.getSelectedSensorPosition(0));
 			return true;

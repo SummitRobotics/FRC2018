@@ -4,12 +4,14 @@ import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import utilities.Sequence;
+import edu.wpi.first.wpilibj.DriverStation;
+import sequencing.Sequence;
 
 public abstract class AutoProgram {
 	protected Hardware robot;
 	private String programName;
-	protected Sequence[] commands;
+	protected Sequence commands;
+	private boolean modeDisabled = false;
 
 	public AutoProgram(Hardware r, String name)
 	{
@@ -17,31 +19,40 @@ public abstract class AutoProgram {
 		programName = name;
 	}
 	
-	public abstract void autonomousInit();
+	public final void autonomousInit() {
+		setupComponents();
+		addActions();
+	}
 	
-	public void autonomousPeriodic() {
-		for(int a = 0; a < commands.length; ++a) {
-			if(!commands[a].done()) {
-				commands[a].run();
-			}
+	private final void setupComponents() {
+		if(robot.winchEnabled) {
+			//robot.winch.set(ControlMode.PercentOutput, robot.variables.getWinchMinPower());
+		}
+		if(robot.pneumaticsEnabled) {
+			robot.clamp.set(DoubleSolenoid.Value.kForward);
+			robot.extender.set(DoubleSolenoid.Value.kReverse);
+			//robot.ramp.set(false);
+		}
+		commands = new Sequence(robot);
+	}
+	
+	public abstract void addActions();
+	
+	public final void autonomousPeriodic() {
+		if(!commands.isFinished() && !modeDisabled) {
+			commands.run();
 		}
 	}
 	
-	public void autonomousDisabledInit() {
+	public final void autonomousDisabledInit() {
 		robot.leftDrive.set(ControlMode.PercentOutput, 0);
 		robot.rightDrive.set(ControlMode.PercentOutput, 0);
-		robot.clamp.set(DoubleSolenoid.Value.kReverse);
+		commands = new Sequence(robot);
+		modeDisabled = true;
 	}
 	
-	public String getName() {
+	public final String getName() {
 		return programName;
-	}
-	
-	protected void initCommands(int x) {
-		commands = new Sequence[x];
-		for(int a = 0; a < x; ++a) {
-			commands[a] = new Sequence(robot);
-		}
 	}
 
 }

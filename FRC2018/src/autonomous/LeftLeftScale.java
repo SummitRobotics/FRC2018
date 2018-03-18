@@ -8,18 +8,29 @@ public class LeftLeftScale extends AutoProgram {
 	public LeftLeftScale(Hardware r) {
 		super(r, "CLL");
 	}
-
+	
 	@Override
-	public void autonomousInit() {
-		initCommands(2);
+	public void addActions() {
+		commands.addMastTop();
+		commands.addSequence(0, 1);
 		
-		commands[1].addClamp();
-		commands[1].addMastT(10);
-		commands[0].addForwardD(333);
-		commands[0].addRotationGyro(90);
-		//commands[0].addForwardT(2, .2);
-		commands[0].addExtend();
-		commands[0].addClamp();
+		commands.addForwardD(333);
+		commands.addRotationGyro(90);
+		commands.addSequence(0, 2);
+		
+		commands.addForwardD(10);
+		commands.addEject();
+		commands.addForwardD(-20);
+		commands.addSequence(1, 2, 3);
+		
+		commands.addRotationGyro(40);
+		commands.addForwardD(100);
+		commands.addSequence(3, 4);
+		
+		commands.addMastBottom();
+		commands.addSequence(3, 5);
+		
+		commands.addAutoCube();
+		commands.addSequence(4, 5, 6);
 	}
-
 }
