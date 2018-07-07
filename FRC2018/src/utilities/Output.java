@@ -5,13 +5,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Output {
 	private Hardware robot;
+	//private Leds neoPixels;
 	
 	public Output(Hardware r) {
 		robot = r;
+		//neoPixels = new Leds();
 	}
 	
 	public void update() {
 		printComponentStatus();
+		//neoPixels.input((int) SmartDashboard.getNumber("Led Mode", 0));
 	}
 	
 	private void printComponentStatus() {
@@ -24,5 +27,6 @@ public class Output {
 		SmartDashboard.putBoolean("Gyro Status", robot.gyroEnabled);
 		SmartDashboard.putBoolean("Limit Switch:", robot.limitSwitchPresent);
 		SmartDashboard.putBoolean("Ramp Status", robot.winchEnabled);
+		//SmartDashboard.putBoolean("LEDs Connected:", neoPixels.ledsEnabled);
 	}
 }

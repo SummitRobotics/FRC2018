@@ -2,67 +2,59 @@ package teleop;
 
 import java.util.ArrayList;
 import org.usfirst.frc.team5468.robot.Hardware;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import actions.*;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import sequencing.Subsequence;
 import templates.Action;
 import templates.TeleopProgram;
+import utilities.Leds;
+import utilities.Xbox;
 
 public class NewStandard extends TeleopProgram{
 	//for doing mathy stuff
 	private Utility functions = new Utility();
+	private Xbox gamepad;
 	private boolean inputConfigured = false;
 	
 	//controlling the clamp
 	private Piston clampAction;
-	private Button clampKey;
 	
 	//controlling the piston
 	private Piston extenderAction;
-	private Button extenderKey;
 	
 	//master kill switch
 	private boolean resetInterrupted = true;
-	private Button resetKey;
 	
 	//shooting cubes
 	private boolean ejectInterrupted = true;
 	private Subsequence ejectAction;
-	private Button ejectKey;
 	
 	//vault sequence
 	private boolean vaultInterrupted = true;
 	private Subsequence vaultAction;
-	private Button vaultKey;
 	
 	//vision & drive functions
 	private boolean driveDisabled = false;
 	private Subsequence visionAction;
-	private Button slowKey;
-	private DPAD visionKey;
 	
 	//controlling the mast
 	private boolean mastInterrupted = true;
 	private MastT mastAction;
-	private Joy mastKey;
 	
 	//ramp deploy
 	private boolean rampInterrupted = true;
 	private Subsequence rampAction;
-	private Button[] rampKeys = new Button[2];
 	
-	private DPAD lowerMastKey;
-	private DPAD higherMastKey;
+	private Leds neoPixels;
 	
 	//setting up toggles/subsequences
 	public NewStandard(Hardware r) {
 		super(r, "NewStandard");
+		neoPixels = new Leds();
+		gamepad = new Xbox(r.controller);
 		clampAction = new Piston(r, robot.clamp);
 		extenderAction = new Piston(r, robot.extender);
 		mastAction = new MastT(robot, 0);
@@ -75,18 +67,6 @@ public class NewStandard extends TeleopProgram{
 	
 	private void refreshKeys() {
 		if(robot.controllerPresent && !inputConfigured){
-			vaultKey = new Button(robot.controller, 5);
-			clampKey = new Button(robot.controller, 3);
-			extenderKey = new Button(robot.controller, 1);
-			resetKey = new Button(robot.controller, 2);
-			ejectKey = new Button(robot.controller, 6);
-			visionKey = new DPAD(robot.controller, 270);
-			slowKey = new Button(robot.controller, 4);
-			mastKey = new Joy(robot.controller, 5);
-			lowerMastKey = new DPAD(robot.controller, 180);
-			higherMastKey = new DPAD(robot.controller, 0);
-			rampKeys[0] = new Button(robot.controller, 7);
-			rampKeys[1] = new Button(robot.controller, 8);
 			inputConfigured = true;
 		}
 		else if(!robot.controllerPresent){
@@ -117,58 +97,68 @@ public class NewStandard extends TeleopProgram{
 	private Subsequence newVisionSequence() {
 		ArrayList<Action> actions = new ArrayList<Action>();
 		actions.add(new AutoIntake(robot));
-		actions.add(new Piston(robot, robot.clamp));
+		//actions.add(new Piston(robot, robot.clamp));
 		return new Subsequence(actions);
 	}
 	
 	private Subsequence newRampSequence(){
 		ArrayList<Action> actions = new ArrayList<Action>();
-		actions.add(new Piston(robot, robot.ramp));
-		actions.add(new Ramp(robot, 20));
-		actions.add(new Piston(robot, robot.ramp));
+		//actions.add(new Piston(robot, robot.ramp));
+		actions.add(new Ramp(robot, 10));
+		//actions.add(new Piston(robot, robot.ramp));
 		return new Subsequence(actions);
 	}
 
 	@Override
 	public void teleopInit() {
+		//zero the motion magic profile. It can be weird otherwise
 		if(!driveDisabled){
 			robot.leftDrive.set(ControlMode.MotionMagic, robot.leftDrive.getSelectedSensorPosition(0));
 			robot.rightDrive.set(ControlMode.MotionMagic, robot.rightDrive.getSelectedSensorPosition(0));
 		}
+		//this prevents the need for double toggle at the beginning of teleop
 		if(robot.pneumaticsEnabled){
-			robot.ramp.set(DoubleSolenoid.Value.kReverse);
-			robot.ramp.set(DoubleSolenoid.Value.kReverse);
+			robot.extender.set(robot.extender.get());
+			robot.clamp.set(robot.clamp.get());
 		}
+		//zero the encoders
+		robot.leftDrive.setSelectedSensorPosition(0, 0, 0);
+		robot.rightDrive.setSelectedSensorPosition(0, 0, 0);
+		robot.leftDrive.set(ControlMode.MotionMagic, robot.leftDrive.getSelectedSensorPosition(0));
+		robot.rightDrive.set(ControlMode.MotionMagic, robot.rightDrive.getSelectedSensorPosition(0));
+		robot.leftDrive.set(ControlMode.PercentOutput, 0);
+		robot.rightDrive.set(ControlMode.PercentOutput, 0);
 	}
 
 	@Override
 	public void teleopPeriodic() {	
-		SmartDashboard.putBoolean("Vault Interrupted:", vaultInterrupted);
-		SmartDashboard.putBoolean("Drive Interrupted:", driveDisabled);
-		SmartDashboard.putBoolean("Mast Interrupted:", mastInterrupted);
-		SmartDashboard.putBoolean("Eject Interrupted", ejectInterrupted);
-		SmartDashboard.putBoolean("Reset Interrupted:", resetInterrupted);
-		
+		SmartDashboard.putNumber("LEFT ENCODER:", robot.leftDrive.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("RIGHT ENCODER:", robot.rightDrive.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("LIMELIGHT AREA", robot.lemonlight.getArea());
+		//SmartDashboard.putBoolean("HIGHER SWITCH", robot.higherMastSwitch.get());
 		refreshKeys();
 		//methods are organized by interrupts
 		//drive functions
-		//vision();
+		vision();
 		drive();
 		//pneumatic controls
 		clamp();
 		extend();
 		reset();
-		eject();
-		vault();
+		intake();
+		//eject();
+		//vault();
 		//controlling the mast
 		mast();
 		//ramp deploy
-		ramp();
+		//ramp();
 	}
 	
-	//clamp the intake
+	private int n = 1;
 	private void clamp() {
-		if(clampKey.toggled()) {
+		if(gamepad.xIsToggled()) {
+			neoPixels.input(n);
+			n = 1+((n + 1) % 3);
 			ejectInterrupted = true;
 			vaultInterrupted = true;
 			resetInterrupted = true;
@@ -178,11 +168,24 @@ public class NewStandard extends TeleopProgram{
 	
 	//extend the intake
 	private void extend() {
-		if(extenderKey.toggled()) {
+		if(gamepad.aIsToggled()) {
 			ejectInterrupted = true;
 			vaultInterrupted = true;
 			resetInterrupted = true;
 			extenderAction.run();
+		}
+	}
+	
+	private void intake() {
+		if(robot.intakeEnabled) {
+			double intakePower = 0;
+			if(gamepad.leftBumper()) {
+				intakePower -= 1;
+			}
+			else if(gamepad.rightBumper()) {
+				intakePower += 1;
+			}
+			robot.intake.set(ControlMode.PercentOutput, intakePower);
 		}
 	}
 	
@@ -192,7 +195,7 @@ public class NewStandard extends TeleopProgram{
 	//
 	//**************//
 	private void reset() {
-		if(resetKey.toggled()) {
+		if(gamepad.bIsToggled()) {
 			resetInterrupted = false;
 			ejectInterrupted = true;
 			vaultInterrupted = true;
@@ -212,8 +215,8 @@ public class NewStandard extends TeleopProgram{
 	}
 	
 	//actuates the cube into the switch or scale
-	private void eject() {
-		if(ejectKey.toggled()) {
+	/*private void eject() {
+		if(gamepad.leftBumperIsToggled()) {
 			resetInterrupted = true;
 			ejectInterrupted = false;
 			vaultInterrupted = true;
@@ -225,7 +228,7 @@ public class NewStandard extends TeleopProgram{
 			}
 			ejectAction.run();
 		}
-	}
+	}*/
 	
 	//rocket league drive controls
 	//is overriden by vision controls
@@ -234,8 +237,8 @@ public class NewStandard extends TeleopProgram{
 	private double lastRightPower = 0;
 	private void drive() {
 		if(!driveDisabled) {
-			double forwardsPower = functions.toExponential(functions.deadzone(robot.controller.getThrottle() - robot.controller.getZ(), 0.2), 2.3)*0.85;
-			double turningPower = functions.toExponential(functions.deadzone(robot.controller.getX(Hand.kLeft), 0.2), 2.3)*0.9;
+			double forwardsPower = functions.toExponential(functions.deadzone(gamepad.getRightTrigger() - gamepad.getLeftTrigger(), 0.2), 2.3)*0.85;
+			double turningPower = functions.toExponential(functions.deadzone(gamepad.leftJoystickX(), 0.2), 2.3)*0.9;
 			
 			double leftPower = functions.clamp(functions.deadzone(forwardsPower,.1)+turningPower, -1, 1);
 			double rightPower = functions.clamp(functions.deadzone(forwardsPower,.1)-turningPower, -1, 1);
@@ -252,7 +255,7 @@ public class NewStandard extends TeleopProgram{
 	
 	//for manually thresholding drivetrain power
 	private double maxDrivePower() {
-		if(slowKey.getStatus()) {
+		if(gamepad.y()) {
 			return Math.max(robot.variables.getMinRotatePower(), .3);
 		}
 		else {
@@ -262,10 +265,9 @@ public class NewStandard extends TeleopProgram{
 	
 	//for auto intake
 	private void vision() {
-		if(visionKey.getStatus()) {
-			if(visionKey.isDPADToggled()) {
+		if(gamepad.leftDPAD()) {
+			if(gamepad.leftDPADIsToggled()) {
 				visionAction = newVisionSequence();
-				actuateReset();
 			}	
 			visionAction.run();
 			driveDisabled = true;
@@ -275,19 +277,31 @@ public class NewStandard extends TeleopProgram{
 		}
 	}
 	
+	//1 = up
+	//2 = down
+	//like anything else idk 6 = static aka not lifting boomerino
+	
 	//for manipulating the mast
 	private void mast() {
-		if(functions.deadzone(robot.controller.getRawAxis(5), .3) != 0) {
+		if(functions.deadzone(gamepad.rightJoystickY(), .3) != 0) {
 			mastInterrupted = true;
-			mastAction.setPower(functions.clamp(-mastKey.getValue(), -.7,1));
+			//SmartDashboard.putNumber("OUTPUT:", functions.deadzone(gamepad.rightJoystickY(), .3));
+			mastAction.setPower(functions.clamp(gamepad.rightJoystickY(), -.7,1));
+			if(functions.clamp(gamepad.rightJoystickY(), -.7,1) >= 0){
+				//SmartDashboard.putNumber("Led Mode", 1);
+			}
+			else{
+				//SmartDashboard.putNumber("Led Mode", 2);
+			}
 			mastAction.run();
+			return;
 		}
-		else if(lowerMastKey.isDPADToggled()) {
+		else if(gamepad.lowerDPADIsToggled()) {
 			mastInterrupted = false;
 			mastAction.setPower(-.3);
 			mastAction.run();
 		}
-		else if(higherMastKey.isDPADToggled()) {
+		else if(gamepad.upperDPADIsToggled()) {
 			mastInterrupted = false;
 			mastAction.setPower(.5);
 			mastAction.run();
@@ -297,14 +311,15 @@ public class NewStandard extends TeleopProgram{
 				mastAction.run();
 			}
 			else {
+				//SmartDashboard.putNumber("Led Mode", 6);
 				mastAction.setPower(robot.variables.getMinimumMastPower());
 				mastAction.run();
 			}
 		}
 	}
 	
-	private void vault() {
-		if(vaultKey.toggled()) {
+	/*private void vault() {
+		if(gamepad.rightBumperIsToggled()) {
 			resetInterrupted = true;
 			ejectInterrupted = true;
 			vaultInterrupted = false;
@@ -314,29 +329,39 @@ public class NewStandard extends TeleopProgram{
 		if(!vaultInterrupted) {
 			vaultAction.run();
 		}
-	}
+	}*/
 	
+	/*private int iteration = 0;
 	private void ramp() {
-		if(rampKeys[0].toggled()){
-			rampAction = newRampSequence();
-			rampInterrupted = !rampInterrupted;
+		if(gamepad.backIsToggled()){
+			if(iteration % 2 == 0){
+				rampAction = newRampSequence();
+				rampInterrupted = false;
+				SmartDashboard.putString("RAMP", "0");
+			}
+			else if(iteration % 2 == 1){
+				robot.ramp.set(DoubleSolenoid.Value.kReverse);
+				robot.ramp.set(DoubleSolenoid.Value.kReverse);
+				SmartDashboard.putString("RAMP", "1");
+			}
+			iteration++;
 		}
 		else {
-			if(robot.winchEnabled) {
+			if(robot.winchEnabled && rampInterrupted) {
 				robot.winch.set(ControlMode.PercentOutput, robot.variables.getWinchMinPower());
 			}
 		}
+		//run auto actions
 		if(!rampInterrupted) {
 			rampAction.run();
-		}else{
-			if(robot.controller.getRawButton(8)){
-				robot.winch.set(ControlMode.PercentOutput, -.5);
-			}
-			else{
-				robot.winch.set(ControlMode.PercentOutput, 0);
-			}
 		}
-	}
+		//manual winch control
+		if(gamepad.start()){
+			robot.ramp.set(DoubleSolenoid.Value.kReverse);
+			robot.winch.set(ControlMode.PercentOutput, -.5);
+			rampInterrupted = true;
+		}
+	}*/
 
 	@Override
 	public void teleopDisabledInit() {
@@ -349,137 +374,6 @@ public class NewStandard extends TeleopProgram{
 		// TODO Auto-generated method stub
 	}
 
-}
-
-class Button {
-	private Joystick controller;
-	private boolean prevState;
-	private int index;
-	
-	public Button(Joystick con, int i) {
-		controller = con;
-		index = i;
-		prevState = true;
-	}
-	
-	public boolean toggled(){
-		try{
-			if(controller.getRawButton(index) != prevState) {
-				if(controller.getRawButton(index) == true) {
-					prevState = true;
-					SmartDashboard.putBoolean("TOGGLED:", controller.getRawButton(index));
-					return true;
-				}
-				else {
-					prevState = false;
-					SmartDashboard.putBoolean("TOGGLED:", controller.getRawButton(index));
-					return false;
-				}
-			}
-			else {
-				return false;
-			}
-		}catch(Exception e){
-			return false;
-		}
-	}
-	
-	public boolean getStatus() {
-		try{
-			return controller.getRawButton(index);
-		}catch(Exception e){
-			return false;
-		}
-	}
-}
-
-class Joy{
-	private Joystick controller;
-	private double prevPos;
-	private int index;
-	
-	public Joy(Joystick con, int i) {
-		controller = con;
-		index = i;
-	}
-	
-	public boolean isOverriden() {
-		try{
-			if(prevPos != controller.getRawAxis(index)) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}catch(Exception e){
-			return false;
-		}
-	}
-	
-	public double getValue() {
-		try{
-			return controller.getRawAxis(index);
-		}catch(Exception e){
-			return 0;
-		}
-	}
-}
-
-class DPAD{
-	private Joystick controller;
-	private boolean prevState;
-	private int val;
-	
-	public DPAD(Joystick con, int v) {
-		controller = con;
-		val = v;
-		if(val == con.getPOV()) {
-			prevState = true;
-		}
-		else {
-			prevState = false;
-		}
-	}
-	
-	public boolean isDPADToggled() {
-		try{
-			if(!prevState) {
-				if(controller.getPOV() == val) {
-					prevState = true;
-					return true;
-				}
-				else {
-					prevState = false;
-					return false;
-				}
-			}
-			else {
-				if(controller.getPOV() == val) {
-					prevState = true;
-					return false;
-				}
-				else {
-					prevState = false;
-					return false;
-				}
-			}
-		}catch(Exception e){
-			return false;
-		}
-	}
-	
-	public boolean getStatus() {
-		try{
-			if(controller.getPOV() == val) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}catch(Exception e){
-			return false;
-		}
-	}
 }
 
 class Utility{

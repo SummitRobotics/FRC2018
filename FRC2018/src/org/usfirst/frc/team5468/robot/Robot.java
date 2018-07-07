@@ -8,6 +8,7 @@
 package org.usfirst.frc.team5468.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import templates.*;
 import utilities.*;
 
@@ -30,6 +31,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
+		SmartDashboard.putNumber("Led Mode", 1);
 		lemonlight = new Vision();
 		auto = input.getAuto();
 		robot.enableCompressor(true);
@@ -38,6 +40,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		leds.input(2);
 		lemonlight.run();
 		output.update();
 		auto.autonomousPeriodic();
@@ -45,6 +48,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit(){
+		SmartDashboard.putNumber("Led Mode", 6);
 		lemonlight = new Vision();
 		teleop = input.getTeleop();
 		robot.enableCompressor(true);
@@ -53,6 +57,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
+		leds.input(1);
 		lemonlight.run();
 		output.update();
 		teleop.teleopPeriodic();
@@ -60,11 +65,14 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void disabledInit() {
+		SmartDashboard.putNumber("Led Mode", 0);
 		lemonlight.interrupt();
 	}
 	
+	Leds leds = new Leds();
 	@Override 
 	public void disabledPeriodic() {
+		leds.input(6);
 		robot.refreshConfig();
 		output.update();
 	}

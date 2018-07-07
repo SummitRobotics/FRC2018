@@ -76,17 +76,24 @@ public class Variables {
 	private void updateVars() {
 		if(robotName == "A") {
 			wheelDiam = 6;
+			minStallingPower = 0;
 			driveTrainWidth = 28;
 			minRotatePower = .3;
 			minWinchPower = -.2;
-			leftReversed = true;
-			rightReversed = false;
-			leftSensorPhase = false;
-			rightSensorPhase = false;
-			leftFollowerId = 32;
-			leftDriveId = 21;
-			rightFollowerId = 31;
+			leftReversed = false;
+			rightReversed = true;
+			leftSensorPhase = true;
+			rightSensorPhase = true;
+			leftFollowerId = 36;
+			leftDriveId = 27;
+			rightFollowerId = 33;
 			rightDriveId = 22;
+			mastId = 21;
+			mastHallEffectSensorId = 0;
+			lowerMastId = 1;
+			higherMastId = 2;
+			leftIntakeId = 34;
+			rightIntakeId = 35;
 		}
 		else if(robotName == "B") {
 			wheelDiam = 8;
@@ -105,10 +112,10 @@ public class Variables {
 			leftDriveId = 21;
 			rightFollowerId = 36;
 			rightDriveId = 25;
-			clampIdA = 0;
-			clampIdB = 1;
-			extenderIdA = 3;
-			extenderIdB = 2;
+			clampIdA = 1;
+			clampIdB = 0;
+			extenderIdA = 2;
+			extenderIdB = 3;
 			mastId = 23;
 			mastReversed = true;
 			mastHallEffectSensorId = 0;
@@ -118,6 +125,8 @@ public class Variables {
 			minWinchPower = 0;
 			rampPistonIds[0] = 4;
 			rampPistonIds[1] = 5;
+			leftReversedI = true;
+			rightReversedI = false;
 		}
 	}
 	

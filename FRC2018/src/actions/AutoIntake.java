@@ -2,22 +2,22 @@ package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import functions.PID;
 import templates.Action;
 
 public class AutoIntake extends Action{
-	//PID system for vision
-	private PID visionPID = new PID(.02, 0, 0);
-	private PID lateralPID = new PID(.1, 0, 0);
-	
 	//tuning
-	private double maxOutput = .4;
+	private double maxOutput = .7;
+	
 	//maximum angle offset from cube - must be nonzero
-	private double maxError = 2;
+	private double maxError = 1;
+	private double forwardZone = 15;
+	
 	//how large the cube should be present on the screen before stopping
-	private double targetSize = 20;
+	private double targetSize = 55;
+	
 	//to prevent signicicant jerkiness during auto
-	private double lastSteering = 0;
+	private double lastLeftPower = 0;
+	private double lastRightPower = 0;
 	
 	//constructor
 	public AutoIntake(Hardware r) {
@@ -26,13 +26,7 @@ public class AutoIntake extends Action{
 
 	@Override
 	public void actionInit() {
-		//setup PID subsystems of both lateral and yaw movement independently
-		visionPID.setMaxOutput(maxOutput);
-		visionPID.setTarget(0);
-		visionPID.setNoiseLevels(.01);
-		
-		lateralPID.setMaxOutput(maxOutput);
-		lateralPID.setTarget(targetSize);
+		//init
 	}
 	
 	@Override
@@ -42,31 +36,47 @@ public class AutoIntake extends Action{
 		
 		//if vision present
 		if(robot.lemonlightPresent) {
-			//and if the target is skewed and actually the cube
-			if(Math.abs(robot.lemonlight.getOffsetDegrees()) > maxError && robot.lemonlight.getArea() > 1) {
-				//then rotate the robot to the target
-				steering = visionPID.output(robot.lemonlight.getOffsetDegrees());
-				steering = smoothSteering(steering);
+			if(robot.lemonlight.getArea() < targetSize && Math.abs(robot.lemonlight.getOffsetDegrees()) > maxError) {
+				steering = robot.lemonlight.getOffsetDegrees() / 80;
 			}
-			//and if the target is not close to the lemonlight
-			if(robot.lemonlight.getArea() < targetSize) {
-				//then move forward
-				lateral = lateralPID.output(robot.lemonlight.getArea());
+			if(robot.lemonlight.getArea() < targetSize && Math.abs(robot.lemonlight.getOffsetDegrees()) < forwardZone) {
+				lateral = (targetSize - robot.lemonlight.getArea()) / (targetSize * 2);
 			}
 		}
-
+		
+		//calculate the new output
+		double leftPower = clamp(lateral + steering, -maxOutput, maxOutput);
+		double rightPower = clamp(lateral - steering, -maxOutput, maxOutput);
+		
+		//smooth changes
+		leftPower = smoothPower(lastLeftPower, leftPower);
+		rightPower = smoothPower(lastRightPower, rightPower);
+		lastLeftPower = leftPower;
+		lastRightPower = rightPower;
+		
 		//set power accordingly
-		robot.leftDrive.set(ControlMode.PercentOutput, lateral - steering);
-		robot.rightDrive.set(ControlMode.PercentOutput, lateral + steering);
+		robot.leftDrive.set(ControlMode.PercentOutput, leftPower);
+		robot.rightDrive.set(ControlMode.PercentOutput, rightPower);
+	}
+	
+	
+	public double clamp(double value, double min, double max) {
+		if(value > max) {
+			return max;
+		}
+		else if(value < min) {
+			return min;
+		}
+		else {
+			return value;
+		}
 	}
 	
 	//given the lack of PID tuning time
 	//I smoothed out some of the jerky movements manually
-	private double smoothSteering(double x) {
-		int ecc = 2;
-		double newSteering = (x + (lastSteering*ecc)) / (1 + ecc);
-		lastSteering = x;
-		return newSteering;
+	private double smoothPower(double past, double present) {
+		int n = 0;
+		return ((past*n) + present)/(1+n);
 	}
 
 	@Override
