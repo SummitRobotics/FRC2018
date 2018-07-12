@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 import utilities.Variables;
 import utilities.Vision;
 
@@ -30,7 +29,7 @@ public class Hardware {
 	public Compressor compressor;
 	public DoubleSolenoid clamp;
 	public DoubleSolenoid extender;
-	public DoubleSolenoid ramp;
+	//public DoubleSolenoid ramp;
 	
 	//carriage lift
 	public TalonSRX mast;
@@ -92,9 +91,10 @@ public class Hardware {
 	
 	//**************//
 	//
-	//	Live updating of current components
+	//	Live updating of current components called in an iterative fashion
 	//	If a component is disconnected/reconnected
 	//  Its status will be accounted for with minimal delay
+	//	These prevents the robot from being completely disabled from fault
 	//
 	//**************//
 	public void refreshConfig() {
@@ -351,11 +351,11 @@ public class Hardware {
 		rightDrive.config_kD(0, Variables.d, Variables.delay);
 		
 		/* set acceleration and vcruise velocity - see documentation */
-		leftDrive.configMotionCruiseVelocity(3000, Variables.delay);
-		leftDrive.configMotionAcceleration(500, Variables.delay);
+		leftDrive.configMotionCruiseVelocity(2500, Variables.delay);
+		leftDrive.configMotionAcceleration(750, Variables.delay);
 		
-		rightDrive.configMotionCruiseVelocity(3000, Variables.delay);
-		rightDrive.configMotionAcceleration(500, Variables.delay);
+		rightDrive.configMotionCruiseVelocity(2500, Variables.delay);
+		rightDrive.configMotionAcceleration(750, Variables.delay);
 		
 		/* zero the sensor */
 		leftDrive.setSelectedSensorPosition(0, Variables.kPIDLoopIdx, Variables.delay);
@@ -372,7 +372,7 @@ public class Hardware {
 			if((variables.getClampIds()[0] != 0 || variables.getClampIds()[1] != 0) && (variables.getExtenderIds()[0] != 0 || variables.getExtenderIds()[1] != 0)) { 
 				clamp = new DoubleSolenoid(variables.getClampIds()[0], variables.getClampIds()[1]);
 				extender = new DoubleSolenoid(variables.getExtenderIds()[0], variables.getExtenderIds()[1]);
-				ramp = new DoubleSolenoid(variables.getRampPistonIds()[0], variables.getRampPistonIds()[1]);
+				//ramp = new DoubleSolenoid(variables.getRampPistonIds()[0], variables.getRampPistonIds()[1]);
 				compressor = new Compressor(0);
 				pneumaticsEnabled = true;
 			}
@@ -388,7 +388,7 @@ public class Hardware {
 		try {
 			clamp.get();
 			extender.get();
-			ramp.get();
+			//ramp.get();
 			compressor.getClosedLoopControl();
 			pneumaticsEnabled = true;
 		}catch(Exception e) {

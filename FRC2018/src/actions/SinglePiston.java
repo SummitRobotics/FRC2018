@@ -2,8 +2,6 @@
 package actions;
 
 import org.usfirst.frc.team5468.robot.Hardware;
-
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 import templates.Action;
 

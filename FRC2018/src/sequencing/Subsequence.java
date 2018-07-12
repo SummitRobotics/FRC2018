@@ -10,7 +10,7 @@ public class Subsequence {
 	private int suffix;
 	private int iteration = 0;
 	
-	//constructor
+	//constructor for autonomous
 	public Subsequence(ArrayList<Action> a, int[] p, int s) {
 		actions = a;
 		prefix = p;
@@ -23,6 +23,9 @@ public class Subsequence {
 	}
 	
 	//iterate through subsequence
+	//note that this method is flag agnostic
+	//this means that teleop can run it, but auto has to handle flags
+	//this is done in Sequence.java
 	public void run() {
 		if(!isFinished()) {
 			if(!actions.get(iteration).finished()) {
@@ -47,6 +50,7 @@ public class Subsequence {
 		iteration = actions.size();
 	}
 	
+	//return the flags necessary for the branch to start
 	public int[] requiredFlags() {
 		return prefix;
 	}

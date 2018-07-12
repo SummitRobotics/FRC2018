@@ -37,7 +37,13 @@ public class MastT extends Action {
 	public void actionPeriodic() {
 		//if the mast is enabled
 		if(robot.mastEnabled){
-			robot.mast.set(ControlMode.PercentOutput, smoothPower(robot.mast.getMotorOutputPercent()));
+			if(robot.higherMastSwitch.get()){
+				//power =  clamp(power, -1,  robot.variables.getMinimumMastPower());
+			}
+			if(robot.lowerMastSwitch.get()){
+				//power = clamp(power, robot.variables.getMinimumMastPower(), 1);
+			}
+			robot.mast.set(ControlMode.PercentOutput, smoothPower());
 		}
 	}
 	
@@ -46,13 +52,27 @@ public class MastT extends Action {
 		if((x > 0) && (x < robot.variables.getMinimumMastPower())){
 			power = robot.variables.getMinimumMastPower();
 		}
-		power = x;
+		else{
+			power = x;
+		}
+	}
+	
+	public double clamp(double value, double min, double max) {
+		if(value > max) {
+			return max;
+		}
+		else if(value < min) {
+			return min;
+		}
+		else {
+			return value;
+		}
 	}
 	
 	//this prevents a 0 to X acceleration jump in the first iteration of the action
-	private double smoothPower(double point) {
+	private double smoothPower() {
 		int n = 2;
-		return ((point*n) + power)/(1+n);
+		return ((robot.mast.getMotorOutputPercent()*n) + power)/(1+n);
 	}
 
 	@Override
@@ -71,26 +91,7 @@ public class MastT extends Action {
 	}
 	
 	@Override
-		public String getAction() {
+	public String getAction() {
 			return "Time-based Mast";
 	}
-	
-	private boolean forceStop() {
-		//if any of the switches have incremented
-		if(robot.lowerMastSwitch.get() || robot.higherMastSwitch.get()) {
-			//if going down and top hit
-			if(robot.higherMastSwitch.get() && robot.mast.getMotorOutputPercent() <= robot.variables.getMinimumMastPower()) {
-				return false;
-			}
-			//if going up and bottom hit
-			else if(robot.lowerMastSwitch.get() && robot.mast.getMotorOutputPercent() >= robot.variables.getMinimumMastPower()){
-				return false;
-			}
-			else {
-				return true;
-			}
-		}
-		return false;
-	}
-
 }

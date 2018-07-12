@@ -11,7 +11,7 @@ public class Compliant extends Action{
 	//time for intake action
 	private double time;
 	//default power
-	private double power = .8;
+	private double power = -.5;
 	//timer
 	private Timer clock;
 	

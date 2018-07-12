@@ -23,16 +23,16 @@ public class RotateGyro extends Action{
 	public RotateGyro(Hardware r, double theta) {
 		super(r);
 		angle = theta;
-		minPower = robot.variables.getMinRotatePower();
+		minPower = .5;
 		maxPower = minPower * 1.5;
 	}
 	
 	//constructor 2
 	public RotateGyro(Hardware r, double theta, double power) {
 		super(r);
-		angle = theta;
+		angle = Math.signum(theta) * (Math.abs(theta) - 3);
 		maxPower = power;
-		minPower = robot.variables.getMinRotatePower();
+		minPower = .45;
 		maxPower = minPower * 1.5;
 	}
 

@@ -7,6 +7,7 @@ import templates.Action;
 public class MastD extends Action {
 	//distances
 	private double target;
+	//private int position;
 	
 	private double offset = 0;
 	private double power = .5;
@@ -84,6 +85,14 @@ public class MastD extends Action {
 			return power * sign;
 		}
 		return robot.variables.getMinimumMastPower();
+	}
+	
+	public void zeroPosition() {
+		//position = 0;
+	}
+	
+	public void remax() {
+		//position = 20;
 	}
 
 }
