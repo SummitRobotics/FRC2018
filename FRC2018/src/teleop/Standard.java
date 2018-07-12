@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import functions.MotorControl;
 import templates.TeleopProgram;
 
-public class Standard extends TeleopProgram{
+public class Standard extends TeleopProgram{//hahahahahahahaha
 	//pneumatics
 	private Piston clamp;
 	private boolean lastClampState = false;
